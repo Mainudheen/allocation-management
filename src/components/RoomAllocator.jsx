@@ -50,7 +50,7 @@ function RoomAllocator() {
       } else {
         const lastRoom = rooms[rooms.length - 1];
         const roomNumMatch = lastRoom.match(/(\d+)/);
-        const roomPrefix = lastRoom.replace(/\d+/g, '') || 'R';
+       // const roomPrefix = lastRoom.replace(/\d+/g, '') || 'R';
         const startNumber = roomNumMatch ? parseInt(roomNumMatch[0]) : 100;
         const newRoomNum = startNumber + (Math.floor(i / 30) - rooms.length + 1);
         room = `${newRoomNum}`;

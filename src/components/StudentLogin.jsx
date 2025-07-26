@@ -15,11 +15,32 @@ function StudentLogin() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Student Login Data:', formData);
-    // Add logic to authenticate or navigate after login
-  };
+ 
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+    
+      try {
+        const res = await fetch("http://localhost:5000/api/student-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+    
+        const data = await res.json();
+    
+        if (res.ok) {
+          alert("Login successful!");
+          // navigate to dashboard or display student info
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error("Error during login:", error);
+        alert("Server error");
+      }
+    };
+    
+
 
   return (
     <div className="student-login-container">
@@ -33,6 +54,14 @@ function StudentLogin() {
           value={formData.name}
           onChange={handleChange}
           required
+        />
+
+        <input
+          type='text'
+          name='rollno'
+          placeholder='Enter Your Roll No'
+          value={formData.rollno}
+          onChange={handleChange}
         />
          <select
           name="year"
