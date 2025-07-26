@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './StudentLogin.css';
 
+
 function StudentLogin() {
  const [formData, setFormData] = useState({
   name: '',
@@ -49,6 +50,7 @@ function StudentLogin() {
 
   return (
     <div className="student-login-container">
+     
       <form className="student-login-card" onSubmit={handleSubmit}>
         <h2>STUDENT LOGIN</h2>
 
@@ -106,6 +108,7 @@ function StudentLogin() {
 
         <button type="submit">Login</button>
       </form>
+     
     </div>
   );
 }
