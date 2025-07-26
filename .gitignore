@@ -1,23 +1,22 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Ignore all node_modules in all folders
+node_modules/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Ignore Excel and temp Excel files
+*.xlsx
+~$*.xlsx
 
-# testing
-/coverage
+# Ignore environment files
+.env
+.env.*
 
-# production
-/build
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Others
+.pnp
+.pnp.js
+.DS_Store
+coverage/
+build/

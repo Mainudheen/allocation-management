@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import './StudentLogin.css';
 
 function StudentLogin() {
-  const [formData, setFormData] = useState({
-    name: '',
-    className: '',
-    password: ''
-  });
+ const [formData, setFormData] = useState({
+  name: '',
+  rollno: '',
+  year: '',
+  className: '',
+  password: ''
+});
+
 
   const handleChange = (e) => {
     setFormData({
@@ -18,6 +21,8 @@ function StudentLogin() {
  
     const handleSubmit = async (e) => {
       e.preventDefault();
+      console.log("Sending login data:", formData);
+
     
       try {
         const res = await fetch("http://localhost:5000/api/student-login", {
