@@ -52,8 +52,7 @@ function StudentLogin() {
     <div className="student-login-container">
      
       <form className="student-login-card" onSubmit={handleSubmit}>
-        <h2>STUDENT LOGIN</h2>
-
+            <h2>STUDENT LOGIN </h2>
         <input
           type="text"
           name="name"
