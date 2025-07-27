@@ -24,6 +24,8 @@ function RoomAllocator() {
       const wb = XLSX.read(bstr, { type: 'binary' });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+
       setExcelData(jsonData);
     };
     reader.readAsBinaryString(file);
@@ -50,7 +52,7 @@ function RoomAllocator() {
       } else {
         const lastRoom = rooms[rooms.length - 1];
         const roomNumMatch = lastRoom.match(/(\d+)/);
-       // const roomPrefix = lastRoom.replace(/\d+/g, '') || 'R';
+        // const roomPrefix = lastRoom.replace(/\d+/g, '') || 'R';
         const startNumber = roomNumMatch ? parseInt(roomNumMatch[0]) : 100;
         const newRoomNum = startNumber + (Math.floor(i / 30) - rooms.length + 1);
         room = `${newRoomNum}`;
@@ -61,10 +63,27 @@ function RoomAllocator() {
       const inv2 = invigilatorList[(invigilatorIndex + 1) % invigilatorList.length];
       invigilatorIndex += 2;
 
-      const rollNumbers = batch.map(student => student.Roll || student['Roll No'] || student['RollNumber'] || student['RollNumber'] || '').filter(r => r !== '').join(', ');
+      //const rollNumbers = batch.map(student => student.Roll || student['Roll No'] || student['RollNumber'] || student['RollNumber'] || '' || student['RollNo']).filter(r => r !== '').join(', ');
+
+      const rollList = batch
+        .map(student => student.Roll || student['Roll No'] || student['RollNumber'] || student['RollNo'] || '')
+        .filter(r => r.trim() !== '')
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+      const rollNumbers = rollList.length > 1
+        ? `${rollList[0]} – ${rollList[rollList.length - 1]}`
+        : rollList[0] || 'N/A';
+
+
+      const classSet = new Set();
+      batch.forEach(student => {
+        const cls = student.className || student.ClassName || '';
+        if (cls.trim()) classSet.add(cls.trim());
+      });
+      const className = Array.from(classSet).join(', ');
 
       finalAllocation.push({
-        className: 'AIDS A',
+        className,
         room,
         totalStudents: batch.length,
         rollNumbers,
