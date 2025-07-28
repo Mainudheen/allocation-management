@@ -2,9 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import StudentLogin from './components/StudentLogin';
 import AdminAuth from './components/AdminAuth';
-
-
-
 import Dashboard from './components/Dashboard';
 import './styles.css';
 
