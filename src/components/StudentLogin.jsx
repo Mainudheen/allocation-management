@@ -107,7 +107,7 @@ function StudentLogin() {
         />
         
        
-        
+        <button type='submit'>Login</button>
        
       </form>
      
