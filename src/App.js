@@ -13,6 +13,7 @@ function App() {
         <Route path="/student-login" element={<StudentLogin />} />
         <Route path="/admin-login" element={<AdminAuth />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        
       </Routes>
     </Router>
   );

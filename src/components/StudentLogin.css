@@ -1,59 +1,77 @@
 .student-login-container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(to right,  #f3f5f5, #c2e9fb);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  animation: slideUpFadeIn 0.8s ease forwards;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  min-height: 100vh;
+  background: linear-gradient(to right, #f8f9fb, #f3f4f7);
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
   }
-  
-  .student-login-card {
-    width: 350px;
-    padding: 40px 30px;
-    border-radius: 16px;
-    background-color: rgb(245, 240, 240);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .student-login-card h2 {
-    margin-bottom: 20px;
-    color: #080808;
-  }
-  
-  .student-login-card input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-  }
-  
-  .student-login-card button {
-    margin-top: 20px;
-    padding: 12px;
-    width: 100%;
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .student-login-card button:hover {
-    background-color: #357ab7;
-  }
-  .student-login-card select {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-    background-color: white;
-  }
-  
-  
+}
+
+.student-login-card {
+  background-color: #fff;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.student-login-card h2 {
+  margin-bottom: 24px;
+  color: #333;
+  font-weight: bold;
+}
+
+.student-login-card input,
+.student-login-card select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.student-login-card input:focus,
+.student-login-card select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.student-login-card input:hover,
+.student-login-card select:hover {
+  background-color: #f0f8ff;
+}
+
+.student-login-card button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;  
+}
+
+.student-login-card button:hover {
+  background-color: #0056b3;
+  transform: scale(1.03);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
