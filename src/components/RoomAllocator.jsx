@@ -6,6 +6,8 @@ function RoomAllocator() {
   const [excelData, setExcelData] = useState([]);
   const [roomsInput, setRoomsInput] = useState('');
   const [examName, setExamName] = useState('');
+  const [examDate, setExamDate] = useState('');
+  const [yearOfStudy, setYearOfStudy] = useState('');
   const [allocations, setAllocations] = useState([]);
 
   const invigilatorList = [
@@ -39,8 +41,8 @@ function RoomAllocator() {
       return;
     }
 
-    if (!examName.trim()) {
-      alert("Please enter the Exam Name.");
+    if (!examName.trim() || !examDate || !yearOfStudy) {
+      alert("Please fill in all fields: Exam Name, Date, and Year of Study.");
       return;
     }
 
@@ -88,6 +90,8 @@ function RoomAllocator() {
         totalStudents: batch.length,
         rollNumbers,
         examName,
+        examDate,
+        yearOfStudy,
         invigilators: [inv1, inv2]
       });
     }
@@ -102,13 +106,15 @@ function RoomAllocator() {
     }
 
     const wsData = [
-      ["Class", "Room", "Total Students", "Roll Numbers","Exam Name", "Invigilator 1", "Invigilator 2"],
+      ["Class", "Room", "Total Students", "Roll Numbers", "Exam Name", "Exam Date", "Year", "Invigilator 1", "Invigilator 2"],
       ...allocations.map(a => [
         a.className,
         a.room,
         a.totalStudents,
         a.rollNumbers,
         a.examName,
+        a.examDate,
+        a.yearOfStudy,
         a.invigilators[0],
         a.invigilators[1]
       ])
@@ -127,7 +133,7 @@ function RoomAllocator() {
 
   return (
     <div className="dashboard-container">
-      <h2>Room Allocation Dashboard</h2>
+     
 
       <div className="control-panel">
         <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
@@ -145,43 +151,63 @@ function RoomAllocator() {
           onChange={(e) => setExamName(e.target.value)}
         />
 
+        <input
+          type="date"
+          value={examDate}
+          onChange={(e) => setExamDate(e.target.value)}
+        />
+
+        <select
+          value={yearOfStudy}
+          onChange={(e) => setYearOfStudy(e.target.value)}
+        >
+          <option value="">Select Year of Study</option>
+          <option value="II">II</option>
+          <option value="III">III</option>
+          <option value="IV">IV</option>
+        </select>
+
         <button onClick={allocate}>Allocate</button>
         <button onClick={downloadExcel}>Download Excel</button>
       </div>
 
-      {allocations.length > 0 && examName && (
-        <h3 style={{ textAlign: 'center', marginTop: '20px' }}>
-          Allocation for: <span style={{ color: '#2f3542' }}>{examName}</span>
-        </h3>
-      )}
-
       {allocations.length > 0 && (
-        <table className="allocation-table">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th>Room</th>
-              <th>Total Students</th>
-              <th>Roll Numbers</th>
-              <th>Exam Name</th>
-              <th>Invigilator 1</th>
-              <th>Invigilator 2</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allocations.map((a, idx) => (
-              <tr key={idx}>
-                <td>{a.className}</td>
-                <td>{a.room}</td>
-                <td>{a.totalStudents}</td>
-                <td>{a.rollNumbers}</td>
-                <td>{a.examName}</td>
-                <td>{a.invigilators[0]}</td>
-                <td>{a.invigilators[1]}</td>
+        <>
+          <h3 style={{ textAlign: 'center', marginTop: '20px' }}>
+            Allocation for: <span style={{ color: '#2f3542' }}>{examName}</span> on {examDate} | Year: {yearOfStudy}
+          </h3>
+
+          <table className="allocation-table">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Room</th>
+                <th>Total Students</th>
+                <th>Roll Numbers</th>
+                <th>Exam Name</th>
+                <th>Exam Date</th>
+                <th>Year</th>
+                <th>Invigilator 1</th>
+                <th>Invigilator 2</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {allocations.map((a, idx) => (
+                <tr key={idx}>
+                  <td>{a.className}</td>
+                  <td>{a.room}</td>
+                  <td>{a.totalStudents}</td>
+                  <td>{a.rollNumbers}</td>
+                  <td>{a.examName}</td>
+                  <td>{a.examDate}</td>
+                  <td>{a.yearOfStudy}</td>
+                  <td>{a.invigilators[0]}</td>
+                  <td>{a.invigilators[1]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
     </div>
   );

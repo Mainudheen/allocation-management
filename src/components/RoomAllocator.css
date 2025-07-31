@@ -1,42 +1,48 @@
+/* Main Dashboard Layout */
 .dashboard-container {
-  padding: 30px 50px;
-  background-color: #f4faff;
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 20px;
   font-family: 'Segoe UI', sans-serif;
-  min-height: 100vh;
+  background-color: #f8f9fa;
+  color: #2f3542;
 }
 
-h2 {
-  font-size: 26px;
-  margin-bottom: 20px;
-  color: #222;
+/* Heading */
+.dashboard-container h2 {
   text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #1e272e;
 }
 
+/* Control Panel Layout */
 .control-panel {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
   align-items: center;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
   justify-content: flex-start;
-    
+  margin-bottom: 30px;
 }
 
-.control-panel input[type="file"] {
-  padding: 6px;
-  font-size: 14px;
-  border-radius: 50px;
-  
-}
-
-.control-panel input[type="text"] {
+/* Consistent Inputs */
+.control-panel input[type="text"],
+.control-panel input[type="date"],
+.control-panel input[type="file"],
+.control-panel select {
   padding: 10px;
   width: 260px;
+  font-size: 14px;
   border: 1px solid #ccc;
- 
-  
+  border-radius: 6px;
+  background-color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  height: 40px;
+  box-sizing: border-box;
 }
 
+/* Buttons */
 .control-panel button {
   padding: 10px 16px;
   background-color: #007bff;
@@ -46,33 +52,52 @@ h2 {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  height: 40px;
 }
 
 .control-panel button:hover {
   background-color: #0056b3;
 }
 
+/* Table Styling */
 .allocation-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
+  margin-top: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 .allocation-table th,
 .allocation-table td {
-  padding: 14px 20px;
-  border: 1px solid #ddd;
+  padding: 14px 12px;
+  border: 1px solid #e0e0e0;
   text-align: center;
+  font-size: 14px;
 }
 
 .allocation-table thead {
-  background-color: #e9f5ff;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
 }
 
-.allocation-table tbody tr:hover {
-  background-color: #f1f9ff;
-  transition: 0.2s ease-in-out;
+.allocation-table tbody tr:nth-child(even) {
+  background-color: #f1f3f5;
+}
+
+/* Responsive for Small Screens */
+@media (max-width: 768px) {
+  .control-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .control-panel input,
+  .control-panel select,
+  .control-panel button {
+    width: 100%;
+  }
 }
