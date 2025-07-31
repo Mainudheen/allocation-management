@@ -5,6 +5,7 @@ import './RoomAllocator.css';
 function RoomAllocator() {
   const [excelData, setExcelData] = useState([]);
   const [roomsInput, setRoomsInput] = useState('');
+  const [examName, setExamName] = useState('');
   const [allocations, setAllocations] = useState([]);
 
   const invigilatorList = [
@@ -35,6 +36,11 @@ function RoomAllocator() {
 
     if (excelData.length === 0) {
       alert("Please upload an Excel file with student data.");
+      return;
+    }
+
+    if (!examName.trim()) {
+      alert("Please enter the Exam Name.");
       return;
     }
 
@@ -81,6 +87,7 @@ function RoomAllocator() {
         room,
         totalStudents: batch.length,
         rollNumbers,
+        examName,
         invigilators: [inv1, inv2]
       });
     }
@@ -95,12 +102,13 @@ function RoomAllocator() {
     }
 
     const wsData = [
-      ["Class", "Room", "Total Students", "Roll Numbers", "Invigilator 1", "Invigilator 2"],
+      ["Class", "Room", "Total Students", "Roll Numbers","Exam Name", "Invigilator 1", "Invigilator 2"],
       ...allocations.map(a => [
         a.className,
         a.room,
         a.totalStudents,
         a.rollNumbers,
+        a.examName,
         a.invigilators[0],
         a.invigilators[1]
       ])
@@ -110,7 +118,10 @@ function RoomAllocator() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Allocations");
 
-    const filename = `Room_Allocations_${new Date().toLocaleDateString().replaceAll('/', '-')}.xlsx`;
+    const dateStr = new Date().toLocaleDateString().replaceAll('/', '-');
+    const cleanExam = examName.trim().replace(/\s+/g, '_') || 'Exam';
+    const filename = `${cleanExam}_Room_Allocations_${dateStr}.xlsx`;
+
     XLSX.writeFile(wb, filename);
   };
 
@@ -120,14 +131,29 @@ function RoomAllocator() {
 
       <div className="control-panel">
         <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
+
         <input
           type="text"
           placeholder="Room numbers (e.g. 208,209,210)"
           onChange={(e) => setRoomsInput(e.target.value)}
         />
+
+        <input
+          type="text"
+          placeholder="Enter Exam Name"
+          value={examName}
+          onChange={(e) => setExamName(e.target.value)}
+        />
+
         <button onClick={allocate}>Allocate</button>
         <button onClick={downloadExcel}>Download Excel</button>
       </div>
+
+      {allocations.length > 0 && examName && (
+        <h3 style={{ textAlign: 'center', marginTop: '20px' }}>
+          Allocation for: <span style={{ color: '#2f3542' }}>{examName}</span>
+        </h3>
+      )}
 
       {allocations.length > 0 && (
         <table className="allocation-table">
@@ -137,6 +163,7 @@ function RoomAllocator() {
               <th>Room</th>
               <th>Total Students</th>
               <th>Roll Numbers</th>
+              <th>Exam Name</th>
               <th>Invigilator 1</th>
               <th>Invigilator 2</th>
             </tr>
@@ -148,6 +175,7 @@ function RoomAllocator() {
                 <td>{a.room}</td>
                 <td>{a.totalStudents}</td>
                 <td>{a.rollNumbers}</td>
+                <td>{a.examName}</td>
                 <td>{a.invigilators[0]}</td>
                 <td>{a.invigilators[1]}</td>
               </tr>
