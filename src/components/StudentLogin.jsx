@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 
 import './StudentLogin.css';
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 function StudentLogin() {
- const [formData, setFormData] = useState({
-  name: '',
-  rollno: '',
-  year: '',
-  className: '',
-  password: ''
-});
+
+  const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    rollno: '',
+    year: '',
+    className: '',
+    password: ''
+  });
 
 
   const handleChange = (e) => {
@@ -20,40 +26,41 @@ function StudentLogin() {
     });
   };
 
- 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      console.log("Sending login data:", formData);
 
-    
-      try {
-        const res = await fetch("http://localhost:5000/api/student-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Sending login data:", formData);
+
+
+    try {
+      const res = await fetch("http://localhost:5000/api/student-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Login successful!");
+        navigate("/student-dashboard", {
+          state: { rollno: formData.rollno.trim().toUpperCase() }
         });
-    
-        const data = await res.json();
-    
-        if (res.ok) {
-          alert("Login successful!");
-          // navigate to dashboard or display student info
-        } else {
-          alert(data.message);
-        }
-      } catch (error) {
-        console.error("Error during login:", error);
-        alert("Server error");
       }
-    };
-    
+
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("Server error");
+    }
+  };
+
 
 
   return (
     <div className="student-login-container">
-     
+
       <form className="student-login-card" onSubmit={handleSubmit}>
-            <h2>STUDENT LOGIN </h2>
+        <h2>STUDENT LOGIN </h2>
         <input
           type="text"
           name="name"
@@ -70,7 +77,7 @@ function StudentLogin() {
           value={formData.rollno}
           onChange={handleChange}
         />
-         <select
+        <select
           name="year"
           value={formData.year}
           onChange={handleChange}
@@ -105,12 +112,12 @@ function StudentLogin() {
           onChange={handleChange}
           required
         />
-        
-       
+
+
         <button type='submit'>Login</button>
-       
+
       </form>
-     
+
     </div>
   );
 }
