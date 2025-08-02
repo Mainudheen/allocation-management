@@ -6,6 +6,7 @@ import AdminAuth from './components/AdminAuth';
 import Dashboard from './components/Dashboard';
 import AdminHomePage from './components/AdminHomepage';
 import StudentDashboard from './components/StudentDashboard';
+import CatOptionsPage from './components/CatOptionsPage';
 import './styles.css';
 
 function StudentDashboardWrapper() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/admin-login" element={<AdminAuth />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin-home" element={<AdminHomePage />} />
+        <Route path="/CatOptionsPage" element={<CatOptionsPage />} />
       </Routes>
     </Router>
   );

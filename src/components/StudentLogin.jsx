@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 function StudentLogin() {
 
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     name: '',
     rollno: '',
@@ -43,9 +43,13 @@ function StudentLogin() {
 
       if (res.ok) {
         alert("Login successful!");
-        navigate("/student-dashboard", {
-          state: { rollno: formData.rollno.trim().toUpperCase() }
+        navigate('/student-dashboard', {
+          state: {
+            rollno: formData.rollno.toUpperCase(),
+            allocations: data.allocations,  // from backend
+          },
         });
+
       }
 
     } catch (error) {

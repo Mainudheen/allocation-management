@@ -32,7 +32,7 @@ function matchRollNumber(rollno, rollNumbersArray) {
   return rollNumbersArray?.some(rangeStr => isRollInRange(rollno, rangeStr));
 }
 
-// ✅ Student Login + Return Allocation if Matched
+// ✅ Student Login + Return All Allocations if Matched
 app.post("/api/student-login", async (req, res) => {
   const { name, rollno, className, year, password } = req.body;
 
@@ -51,13 +51,14 @@ app.post("/api/student-login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // 🔄 Find all matching allocations
     const allocations = await Allocation.find({});
-    const matched = allocations.find(a => matchRollNumber(roll, a.rollNumbers));
+    const matched = allocations.filter(a => matchRollNumber(roll, a.rollNumbers));
 
     res.status(200).json({
       message: "Login successful",
       student,
-      allocation: matched || null
+      allocations: matched || []
     });
 
   } catch (err) {
@@ -66,16 +67,16 @@ app.post("/api/student-login", async (req, res) => {
   }
 });
 
-// ✅ GET Allocation by Roll Number
+// ✅ GET All Allocations by Roll Number (returns array)
 app.get("/api/allocation/:rollno", async (req, res) => {
   const roll = req.params.rollno.trim().toUpperCase();
 
   try {
     const allocations = await Allocation.find({});
-    const matched = allocations.find(a => matchRollNumber(roll, a.rollNumbers));
+    const matched = allocations.filter(a => matchRollNumber(roll, a.rollNumbers));
 
-    if (matched) {
-      res.status(200).json(matched);
+    if (matched.length > 0) {
+      res.status(200).json(matched); // ✅ Return array
     } else {
       res.status(404).json({ message: "No allocation found" });
     }

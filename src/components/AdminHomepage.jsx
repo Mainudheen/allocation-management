@@ -23,7 +23,7 @@ const AdminHomePage = () => {
             <div className="dropbtn" onClick={() => toggleDropdown('hall')}>Hall Allocation</div>
             {openDropdown === 'hall' && (
               <div className="dropdown-content">
-                <Link to="/dashboard">CAT Exam Allocation</Link>
+                <Link to="/CatOptionsPage">CAT Exam Allocation</Link>
                 <Link to="#">PST Exam Allocation</Link>
                 <Link to="#">Special Tests Allocation</Link>
               </div>
