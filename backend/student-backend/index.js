@@ -89,7 +89,7 @@ app.get("/api/allocation/:rollno", async (req, res) => {
 // ✅ Save Allocations (used by RoomAllocator frontend)
 app.post("/api/save-allocations", async (req, res) => {
   try {
-    await Allocation.deleteMany(); // optional: clear existing
+   
     await Allocation.insertMany(req.body.allocations);
     res.status(200).json({ message: "Allocations saved" });
   } catch (err) {
