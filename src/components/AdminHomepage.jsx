@@ -1,69 +1,48 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './AdminHomepage.css';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import './AdminHomePage.css'; // ✅ Correct
 
-const AdminHomePage = () => {
-  const [openDropdown, setOpenDropdown] = useState(null);
 
-  const toggleDropdown = (menu) => {
-    setOpenDropdown((prev) => (prev === menu ? null : menu));
+function AdminHomePage() {
+  const navigate = useNavigate();
+
+  const handleCardClick = (title) => {
+    if (title === 'CAT Test') {
+      navigate('/CatOptionsPage');
+    } else {
+      alert(`${title} page will be added soon.`);
+    }
   };
 
+  const cards = [
+    { title: 'CAT Test', description: 'Upload or update CAT test schedule.', icon: '📄' },
+    { title: 'Special Test', description: 'Manage special exam data.', icon: '🧪' },
+    { title: 'Update Details', description: 'Edit student/faculty/room details.', icon: '✏' }
+  ];
+
   return (
-    <div className="admin-home">
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="logo-container">
-          <img src="/kongu-logo.jpg" alt="Logo" className="logo-img" />
-          <h2 className="logo-text">Kongu Engineering College</h2>
-        </div>
-
-        <ul className="nav-links">
-          <li className="dropdown">
-            <div className="dropbtn" onClick={() => toggleDropdown('hall')}>Hall Allocation</div>
-            {openDropdown === 'hall' && (
-              <div className="dropdown-content">
-                <Link to="/CatOptionsPage">CAT Exam Allocation</Link>
-                <Link to="#">PST Exam Allocation</Link>
-                <Link to="#">Special Tests Allocation</Link>
-              </div>
-            )}
-          </li>
-
-          <li className="dropdown">
-            <div className="dropbtn" onClick={() => toggleDropdown('update')}>Update</div>
-            {openDropdown === 'update' && (
-              <div className="dropdown-content">
-                <Link to="#">Hall Update</Link>
-                <Link to="#">Student Update</Link>
-                <Link to="#">Staff Updates</Link>
-              </div>
-            )}
-          </li>
-
-          <li className="dropdown">
-            <div className="dropbtn" onClick={() => toggleDropdown('reports')}>Reports</div>
-            {openDropdown === 'reports' && (
-              <div className="dropdown-content">
-                <Link to="#">Student Attendance</Link>
-              </div>
-            )}
-          </li>
-        </ul>
-      </nav>
-
-      {/* Footer */}
-      <div className="navbar-footer">
-        <p>Affiliated to Anna University, Chennai | Accredited by NBA & NAAC</p>
+    <div className="dashboard-container">
+      <div className="college-header">
+        <img
+          src="https://rchi2019.kongu.edu/images/header.png"
+          alt="Kongu Engineering College"
+          className="college-banner"
+        />
       </div>
 
-      {/* Page Content */}
-      <div className="admin-content">
-        <h3>Welcome to the Admin Dashboard</h3>
-        <p>Select an option from the navigation bar to proceed.</p>
+      <h1 className="admin-heading">Welcome, Admin</h1>
+
+      <div className="card-grid">
+        {cards.map((card, index) => (
+          <div key={index} className="dashboard-card" onClick={() => handleCardClick(card.title)}>
+            <span className="icon">{card.icon}</span>
+            <h3>{card.title}</h3>
+            <p>{card.description}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
+}
 
 export default AdminHomePage;

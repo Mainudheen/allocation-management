@@ -38,9 +38,9 @@ body {
 }
 
 .article-card .date {
-  font-size: 13px;
+  font-size: 20px;
   margin-bottom: 8px;
-  opacity: 0.9;
+  opacity: 0.9; 
 }
 
 .article-card .title {
@@ -50,6 +50,6 @@ body {
 }
 
 .article-card .info {
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 4px;
 }
