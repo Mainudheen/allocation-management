@@ -7,6 +7,8 @@ import Dashboard from './components/Dashboard';
 import AdminHomePage from './components/AdminHomepage';
 import StudentDashboard from './components/StudentDashboard';
 import CatOptionsPage from './components/CatOptionsPage';
+import SpecialTestOptions from './components/SpecialTestOptions';
+import LabAllocator from './components/LabAllocator';
 import './styles.css';
 
 function StudentDashboardWrapper() {
@@ -26,6 +28,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin-home" element={<AdminHomePage />} />
         <Route path="/CatOptionsPage" element={<CatOptionsPage />} />
+        <Route path="/SpecialTestOptions" element={<SpecialTestOptions />} />
+         <Route path="/LabAllocator" element={<LabAllocator />} />
       </Routes>
     </Router>
   );

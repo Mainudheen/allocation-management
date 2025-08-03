@@ -9,7 +9,12 @@ function AdminHomePage() {
   const handleCardClick = (title) => {
     if (title === 'CAT Test') {
       navigate('/CatOptionsPage');
-    } else {
+    }
+    else if(title === 'Special Test')
+    {
+      navigate('/SpecialTestOptions');
+    }
+    else {
       alert(`${title} page will be added soon.`);
     }
   };

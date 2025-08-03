@@ -1,0 +1,73 @@
+.cat-options-container {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 40px;
+  background: linear-gradient(to right, #f9fcff, #e6f3ff);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 140, 255, 0.15);
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.cat-options-container h2 {
+  color: #0056b3;
+  font-size: 32px;
+  margin-bottom: 40px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cat-options-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 50px;
+}
+
+.cat-option-card {
+  width: 300px;
+  height: 180px;
+  background: white;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 10px 25px rgba(0, 140, 255, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0077ff;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.cat-option-card::before {
+  content: '';
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  background: linear-gradient(135deg, #00bfff, #aee7ff);
+  top: -10%;
+  left: -10%;
+  z-index: 0;
+  transition: 0.5s;
+  opacity: 0;
+}
+
+.cat-option-card:hover::before {
+  opacity: 1;
+}
+
+.cat-option-card span {
+  position: relative;
+  z-index: 1;
+}
+
+.cat-option-card:hover {
+  color: white;
+  box-shadow: 0 15px 30px rgba(0, 140, 255, 0.4);
+  transform: scale(1.05);
+}
