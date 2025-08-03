@@ -21,18 +21,18 @@ mongoose.connect(process.env.MONGO_URI, {
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB error:", err));
 
-// 🧠 Utility: Check if roll number is within a given range string
+// 🔎 Check if a roll number is within a range
 function isRollInRange(rollno, rangeStr) {
   const [start, end] = rangeStr.split("–").map(r => r.trim().toUpperCase());
   return start <= rollno && rollno <= end;
 }
 
-// 🧠 Utility: Check if roll number is in any of the rollNumber ranges
+// 🔁 Check if a roll number matches any range
 function matchRollNumber(rollno, rollNumbersArray) {
   return rollNumbersArray?.some(rangeStr => isRollInRange(rollno, rangeStr));
 }
 
-// ✅ Student Login + Return All Allocations if Matched
+// ✅ Student Login: returns all matched allocations
 app.post("/api/student-login", async (req, res) => {
   const { name, rollno, className, year, password } = req.body;
 
@@ -51,7 +51,6 @@ app.post("/api/student-login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 🔄 Find all matching allocations
     const allocations = await Allocation.find({});
     const matched = allocations.filter(a => matchRollNumber(roll, a.rollNumbers));
 
@@ -67,7 +66,7 @@ app.post("/api/student-login", async (req, res) => {
   }
 });
 
-// ✅ GET All Allocations by Roll Number (returns array)
+// ✅ Fetch All Allocations by Roll Number (array)
 app.get("/api/allocation/:rollno", async (req, res) => {
   const roll = req.params.rollno.trim().toUpperCase();
 
@@ -76,7 +75,7 @@ app.get("/api/allocation/:rollno", async (req, res) => {
     const matched = allocations.filter(a => matchRollNumber(roll, a.rollNumbers));
 
     if (matched.length > 0) {
-      res.status(200).json(matched); // ✅ Return array
+      res.status(200).json(matched);
     } else {
       res.status(404).json({ message: "No allocation found" });
     }
@@ -86,19 +85,23 @@ app.get("/api/allocation/:rollno", async (req, res) => {
   }
 });
 
-// ✅ Save Allocations (used by RoomAllocator frontend)
+// ✅ Save Allocations with TTL expiry (3 days after examDate)
 app.post("/api/save-allocations", async (req, res) => {
   try {
-   
-    await Allocation.insertMany(req.body.allocations);
-    res.status(200).json({ message: "Allocations saved" });
+    const allocationsWithExpiry = req.body.allocations.map(allocation => ({
+      ...allocation,
+      expiryDate: new Date(new Date(allocation.examDate).getTime() + 3 * 24 * 60 * 60 * 1000)
+    }));
+
+    await Allocation.insertMany(allocationsWithExpiry);
+    res.status(200).json({ message: "Allocations saved with expiry" });
   } catch (err) {
     console.error("Saving allocations error:", err);
     res.status(500).json({ message: "Failed to save allocations" });
   }
 });
 
-// ✅ API Health Check
+// ✅ Health Check
 app.get("/", (req, res) => {
   res.send("🚀 Student Room Allocation API is running");
 });
