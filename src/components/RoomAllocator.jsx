@@ -3,12 +3,18 @@ import * as XLSX from 'xlsx';
 import './RoomAllocator.css';
 
 function RoomAllocator() {
-  const [excelData, setExcelData] = useState([]);
-  const [roomsInput, setRoomsInput] = useState('');
-  const [examName, setExamName] = useState('');
+  const [cat, setCat] = useState('');
+  const [session, setSession] = useState('');
   const [examDate, setExamDate] = useState('');
+  const [subjectWithCode, setSubjectWithCode] = useState('');
   const [yearOfStudy, setYearOfStudy] = useState('');
+  const [semNo, setSemNo] = useState('');
+  const [hallNo, setHallNo] = useState('');
+  const [invigilator1, setInvigilator1] = useState('');
+  const [invigilator2, setInvigilator2] = useState('');
   const [allocations, setAllocations] = useState([]);
+  const [rollNumbers, setRollNumbers] = useState([]);
+  const [roomsInput, updateRoomsInput] = useState('');
 
   const invigilatorList = [
     'Mrs.Latha', 'Mrs.Kalaivani', 'Mrs.Thangamani',
@@ -22,54 +28,44 @@ function RoomAllocator() {
       const wb = XLSX.read(evt.target.result, { type: 'binary' });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
-      setExcelData(jsonData);
+      const rolls = jsonData.map(s => s.Roll || s['Roll No'] || s['RollNumber'] || s['RollNo']).filter(Boolean);
+      setRollNumbers(rolls);
     };
     reader.readAsBinaryString(file);
   };
 
   const allocate = async () => {
     const rooms = roomsInput.split(',').map(r => r.trim());
-    if (!excelData.length || !examName || !examDate || !yearOfStudy) {
-      alert("Please complete all fields and upload Excel");
+    const semesterDisplay = semNo && (parseInt(semNo) % 2 === 1 ? `Odd Sem ${semNo}` : `Even Sem ${semNo}`);
+
+    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !yearOfStudy || !semNo || !roomsInput || !hallNo || !invigilator1 || !invigilator2) {
+      alert("Please complete all fields and upload roll numbers");
       return;
     }
 
-    const students = [...excelData];
     const finalAllocation = [];
-    let invigilatorIndex = 0;
 
-    for (let i = 0; i < students.length; i += 30) {
-      const batch = students.slice(i, i + 30);
+    for (let i = 0; i < rollNumbers.length; i += 30) {
+      const batch = rollNumbers.slice(i, i + 30);
       const rawRoom = rooms[Math.floor(i / 30)] || '';
       const roomNumMatch = rawRoom.match(/\d+/);
       const room = roomNumMatch ? roomNumMatch[0] : `100${i / 30}`;
 
-      const inv1 = invigilatorList[invigilatorIndex % invigilatorList.length];
-      const inv2 = invigilatorList[(invigilatorIndex + 1) % invigilatorList.length];
-      invigilatorIndex += 2;
-
-      const rollList = batch
-        .map(s => s.Roll || s['Roll No'] || s['RollNumber'] || s['RollNo'])
-        .filter(Boolean)
-        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-
-      const rollNumbers = rollList.length > 1 ? `${rollList[0]} – ${rollList[rollList.length - 1]}` : rollList[0];
-
-      const classSet = new Set();
-      batch.forEach(s => {
-        const cls = s.className || s.ClassName;
-        if (cls) classSet.add(cls.trim());
-      });
+      const rollList = batch.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      const rollNumbersRange = rollList.length > 1 ? `${rollList[0]} – ${rollList[rollList.length - 1]}` : rollList[0];
 
       finalAllocation.push({
-        className: Array.from(classSet).join(', '),
         room,
+        hallNo,
         totalStudents: batch.length,
-        rollNumbers,
-        examName,
+        rollNumbers: rollNumbersRange,
+        cat,
+        session,
         examDate,
         year: yearOfStudy,
-        invigilators: [inv1, inv2]
+        semNo: semesterDisplay,
+        subjectWithCode,
+        invigilators: [invigilator1, invigilator2]
       });
     }
 
@@ -83,7 +79,8 @@ function RoomAllocator() {
       const result = await res.json();
       if (res.ok) {
         alert("Allocations saved successfully!");
-        setAllocations(finalAllocation);
+        const sorted = finalAllocation.sort((a, b) => new Date(a.examDate) - new Date(b.examDate));
+        setAllocations(sorted);
       } else {
         alert("Error saving allocations: " + result.message);
       }
@@ -100,10 +97,10 @@ function RoomAllocator() {
     }
 
     const wsData = [
-      ["Class", "Room", "Total Students", "Roll Numbers", "Exam Name", "Exam Date", "Year", "Invigilator 1", "Invigilator 2"],
+      ["Hall No", "Total Students", "Roll Numbers", "CAT", "Session", "Date", "Year", "Semester", "Subject with Code", "Invigilator 1", "Invigilator 2"],
       ...allocations.map(a => [
-        a.className, a.room, a.totalStudents, a.rollNumbers,
-        a.examName, a.examDate, a.year, a.invigilators[0], a.invigilators[1]
+        a.hallNo, a.totalStudents, a.rollNumbers,
+        a.cat, a.session, a.examDate, a.year, a.semNo, a.subjectWithCode, a.invigilators[0], a.invigilators[1]
       ])
     ];
 
@@ -115,40 +112,106 @@ function RoomAllocator() {
 
   return (
     <div className="dashboard-container">
+      <h2 className="section-title">📅 Schedule an Exam</h2>
+
       <div className="control-panel">
-        <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
-        <input type="text" placeholder="Rooms (e.g., 101,102)" onChange={e => setRoomsInput(e.target.value)} />
-        <input type="text" placeholder="Exam Name" value={examName} onChange={e => setExamName(e.target.value)} />
-        <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} />
-        <select value={yearOfStudy} onChange={e => setYearOfStudy(e.target.value)}>
-          <option value="">Select Year</option>
-          <option value="II">II</option>
-          <option value="III">III</option>
-          <option value="IV">IV</option>
-        </select>
-        <button onClick={allocate}>Allocate</button>
-        <button onClick={downloadExcel}>Download Excel</button>
+        <div>
+          <label>CAT:</label>
+          <div className="radio-group compact">
+            {[1, 2, 3].map(n => (
+              <label key={n}><input type="radio" name="cat" value={n} checked={cat === `${n}`} onChange={e => setCat(e.target.value)} /> {n}</label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label>Session:</label>
+          <div className="radio-group compact">
+            {["FN", "AN"].map(s => (
+              <label key={s}><input type="radio" name="session" value={s} checked={session === s} onChange={e => setSession(e.target.value)} /> {s}</label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label>Date:</label>
+          <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} />
+        </div>
+
+        <div>
+          <label>Subject with Code:</label>
+          <input type="text" value={subjectWithCode} onChange={e => setSubjectWithCode(e.target.value)} />
+        </div>
+
+        <div>
+          <label>Year of Study:</label>
+          <select value={yearOfStudy} onChange={e => setYearOfStudy(e.target.value)}>
+            <option value="">Select Year</option>
+            <option value="II">II</option>
+            <option value="III">III</option>
+            <option value="IV">IV</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Semester:</label>
+          <input type="number" min="1" max="8" value={semNo} onChange={e => setSemNo(e.target.value)} />
+        </div>
+
+        <div>
+          <label>Upload Roll Numbers:</label>
+          <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
+        </div>
+
+        <div>
+          <label>Room Numbers (comma separated):</label>
+          <input type="text" value={roomsInput} onChange={e => updateRoomsInput(e.target.value)} placeholder="Eg: 101,102,103" />
+        </div>
+
+        <div>
+          <label>Hall No:</label>
+          <input type="text" value={hallNo} onChange={e => setHallNo(e.target.value)} />
+        </div>
+
+        <div>
+          <label>Invigilator 1:</label>
+          <select value={invigilator1} onChange={e => setInvigilator1(e.target.value)}>
+            <option value="">Select</option>
+            {invigilatorList.map((i, index) => <option key={index} value={i}>{i}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label>Invigilator 2:</label>
+          <select value={invigilator2} onChange={e => setInvigilator2(e.target.value)}>
+            <option value="">Select</option>
+            {invigilatorList.map((i, index) => <option key={index} value={i}>{i}</option>)}
+          </select>
+        </div>
+
+        <button className="allocate-all-button" onClick={allocate}>Allocate</button>
+        <button onClick={downloadExcel}>📥 Download Excel</button>
       </div>
 
-      {allocations.length > 0 && (
-        <table className="allocation-table">
-          <thead>
-            <tr>
-              <th>Class</th><th>Room</th><th>Total</th><th>Roll Numbers</th>
-              <th>Exam</th><th>Date</th><th>Year</th><th>Inv. 1</th><th>Inv. 2</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allocations.map((a, i) => (
-              <tr key={i}>
-                <td>{a.className}</td><td>{a.room}</td><td>{a.totalStudents}</td>
-                <td>{a.rollNumbers}</td><td>{a.examName}</td><td>{a.examDate}</td>
-                <td>{a.year}</td><td>{a.invigilators[0]}</td><td>{a.invigilators[1]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      {/* Allocation display */}
+      <div className="card-container">
+        {allocations.map((a, idx) => (
+          <div className="allocation-card" key={idx}>
+            <div className="card-header">
+              🏫 Hall {a.hallNo} | 📅 {a.examDate} | ⏱️ {a.session}
+            </div>
+            <div className="card-body show">
+              <p><strong>Room No:</strong> <span>{a.room}</span></p>
+              <p><strong>Students:</strong> <span>{a.rollNumbers} ({a.totalStudents})</span></p>
+              <p><strong>Subject:</strong> <span>{a.subjectWithCode}</span></p>
+              <p><strong>Year:</strong> <span>{a.year}</span></p>
+              <p><strong>Semester:</strong> <span>{a.semNo}</span></p>
+              <p><strong>Invigilators:</strong> <span>{a.invigilators.join(" & ")}</span></p>
+              <p><strong>Exam:</strong> <span>CAT {a.cat}</span></p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

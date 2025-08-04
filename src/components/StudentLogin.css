@@ -1,13 +1,4 @@
-.student-login-container {
-  animation: slideUpFadeIn 0.8s ease forwards;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px 0;
-  min-height: 100vh;
-  background: linear-gradient(to right, #f8f9fb, #f3f4f7);
-}
-
+/* ========== Entrance Animation ========== */
 @keyframes slideUpFadeIn {
   from {
     opacity: 0;
@@ -19,59 +10,114 @@
   }
 }
 
+/* ========== Page Container ========== */
+.student-login-container {
+  animation: slideUpFadeIn 0.8s ease forwards;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4ff, #dfe9f3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ========== Card Container ========== */
 .student-login-card {
-  background-color: #fff;
-  padding: 40px;
+  background: #ffffff;
+  padding: 40px 30px;
   width: 100%;
   max-width: 420px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
+  transition: all 0.3s ease;
 }
 
+/* ========== Heading ========== */
 .student-login-card h2 {
   margin-bottom: 24px;
-  color: #333;
-  font-weight: bold;
+  color: #222;
+  font-weight: 700;
+  font-size: 1.8rem;
+  letter-spacing: 0.5px;
 }
 
+/* ========== Form Fields ========== */
 .student-login-card input,
 .student-login-card select {
   width: 100%;
-  padding: 12px 15px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  border: 1px solid #cfd8dc;
+  border-radius: 10px;
+  background-color: #fafafa;
+  font-size: 1rem;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .student-login-card input:focus,
 .student-login-card select:focus {
-  border-color: #007bff;
+  border-color: #4a90e2;
+  background-color: #ffffff;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
   outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
 .student-login-card input:hover,
 .student-login-card select:hover {
-  background-color: #f0f8ff;
+  background-color: #f1f9ff;
 }
 
+/* ========== Submit Button ========== */
 .student-login-card button {
-  margin-top: 16px;
+  margin-top: 20px;
   width: 100%;
-  padding: 12px;
-  background: #007bff;
+  padding: 14px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
   color: white;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;  
+  transition: all 0.3s ease;
 }
 
 .student-login-card button:hover {
-  background-color: #0056b3;
-  transform: scale(1.03);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(90deg, #0056b3, #004494);
+  transform: scale(1.04);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* ========== Error & Info Messages ========== */
+.error-message {
+  color: red;
+  font-size: 0.95rem;
+  margin-top: 10px;
+}
+
+.info-message {
+  color: #555;
+  font-size: 0.95rem;
+  margin-top: 10px;
+}
+
+/* ========== Responsive Adjustments ========== */
+@media (max-width: 480px) {
+  .student-login-card {
+    padding: 30px 20px;
+    border-radius: 16px;
+  }
+
+  .student-login-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .student-login-card input,
+  .student-login-card select,
+  .student-login-card button {
+    font-size: 0.95rem;
+  }
 }

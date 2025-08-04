@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
-
 import './StudentLogin.css';
 import { useNavigate } from 'react-router-dom';
 
-
-
-
 function StudentLogin() {
-
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -18,7 +13,6 @@ function StudentLogin() {
     password: ''
   });
 
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -26,11 +20,9 @@ function StudentLogin() {
     });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Sending login data:", formData);
-
 
     try {
       const res = await fetch("http://localhost:5000/api/student-login", {
@@ -45,26 +37,26 @@ function StudentLogin() {
         alert("Login successful!");
         navigate('/student-dashboard', {
           state: {
+            name: formData.name,                   // ✅ PASSING STUDENT NAME
             rollno: formData.rollno.toUpperCase(),
-            allocations: data.allocations,  // from backend
+            allocations: data.allocations || []    // ✅ IF BACKEND RETURNS IT
           },
         });
-
+      } else {
+        alert(data.message || "Login failed.");
       }
 
     } catch (error) {
       console.error("Error during login:", error);
-      alert("Server error");
+      alert("Server error. Please try again later.");
     }
   };
 
-
-
   return (
     <div className="student-login-container">
-
       <form className="student-login-card" onSubmit={handleSubmit}>
-        <h2>STUDENT LOGIN </h2>
+        <h2>STUDENT LOGIN</h2>
+
         <input
           type="text"
           name="name"
@@ -75,12 +67,14 @@ function StudentLogin() {
         />
 
         <input
-          type='text'
-          name='rollno'
-          placeholder='Enter Your Roll No'
+          type="text"
+          name="rollno"
+          placeholder="Enter Your Roll No"
           value={formData.rollno}
           onChange={handleChange}
+          required
         />
+
         <select
           name="year"
           value={formData.year}
@@ -92,7 +86,6 @@ function StudentLogin() {
           <option value="III">III</option>
           <option value="IV">IV</option>
         </select>
-
 
         <select
           name="className"
@@ -117,11 +110,8 @@ function StudentLogin() {
           required
         />
 
-
-        <button type='submit'>Login</button>
-
+        <button type="submit">Login</button>
       </form>
-
     </div>
   );
 }

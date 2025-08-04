@@ -1,35 +1,49 @@
-/* Overall Dashboard Container */
-.dashboard-container {
-  padding: 20px;
-  background-color: #ffffff; /* Changed to white */
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333; /* Changed from light text to dark for white background */
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* College Banner */
+/* ===== Overall Layout ===== */
+.dashboard-container {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f0f4ff, #dfe9f3);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUpFadeIn 0.8s ease forwards;
+}
+
+/* ===== Header Banner ===== */
 .college-header {
   width: 100%;
   margin-bottom: 20px;
 }
-
 .college-header img {
   width: 100%;
   height: auto;
   object-fit: scale-down;
- 
   box-shadow: 0 0 12px rgba(0, 140, 255, 0.3);
 }
 
-/* Heading */
-.dashboard-container h1 {
+/* ===== Main Dashboard Title ===== */
+.dashboard-title {
   text-align: center;
   color: #0077ff;
   font-size: 32px;
+  font-weight: 700;
   margin-bottom: 40px;
 }
 
-/* Card Grid */
+/* ===== Card Grid for Homepage ===== */
 .card-grid {
   display: flex;
   flex-wrap: wrap;
@@ -37,23 +51,23 @@
   gap: 30px;
 }
 
-/* Individual Card Styling */
+/* ===== Dashboard Card Styles ===== */
 .dashboard-card {
   width: 250px;
   height: 180px;
   background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.1);
+  border: 1px solid #e0f2ff;
+  transition: all 0.4s ease;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 15px;
+  text-align: center;
   position: relative;
   overflow: hidden;
-  border: 1px solid #e0f2ff;
-  box-shadow: 0 0 10px rgba(0, 140, 255, 0.1);
-  transition: all 0.4s ease;
-  text-align: center;
-  cursor: pointer;
 }
 
 .dashboard-card:hover {
@@ -61,7 +75,6 @@
   box-shadow: 0 0 30px rgba(0, 140, 255, 0.4);
 }
 
-/* Glowing Overlay on Hover */
 .dashboard-card::before {
   content: '';
   position: absolute;
@@ -69,41 +82,169 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    0deg,
-    transparent,
-    transparent 30%,
-    rgba(0, 140, 255, 0.15)
-  );
+  background: linear-gradient(0deg, transparent, transparent 30%, rgba(0, 140, 255, 0.15));
   transform: rotate(-45deg);
   transition: all 0.5s ease;
   opacity: 0;
   z-index: 1;
 }
-
 .dashboard-card:hover::before {
   opacity: 1;
   transform: rotate(-45deg) translateY(100%);
 }
 
-/* Card Text Styling */
-.dashboard-card h3 {
-  font-size: 20px;
+.dashboard-card .icon {
+  font-size: 2rem;
   color: #0077ff;
   margin-bottom: 10px;
   z-index: 2;
 }
-
+.dashboard-card h3 {
+  font-size: 20px;
+  color: #0077ff;
+  font-weight: 600;
+  margin-bottom: 6px;
+  z-index: 2;
+}
 .dashboard-card p {
   font-size: 14px;
   color: #555;
   z-index: 2;
 }
 
-/* Card Icon Styling */
-.dashboard-card .icon {
-  font-size: 2rem;
-  margin-bottom: 8px;
-  color: #0077ff;
-  z-index: 2;
+/* ===== Room Allocation Form Section ===== */
+.control-panel {
+  background-color: #ffffff;
+  padding: 30px 25px;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.top-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.file-upload-wrapper input[type="file"] {
+  padding: 10px;
+  background-color: #fafafa;
+  border: 1px solid #cfd8dc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.file-upload-wrapper input[type="file"]:hover {
+  background-color: #f1f9ff;
+}
+
+.control-panel input,
+.control-panel select {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem;
+  background-color: #fafafa;
+  border: 1px solid #cfd8dc;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+.control-panel input:focus,
+.control-panel select:focus {
+  border-color: #4a90e2;
+  background-color: #fff;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+  outline: none;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+.control-panel button {
+  flex: 1;
+  padding: 14px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.control-panel button.secondary {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+}
+.control-panel button:hover {
+  background: linear-gradient(90deg, #0056b3, #004494);
+  transform: scale(1.04);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== Table Styling for Allocations ===== */
+.allocation-table {
+  width: 100%;
+  max-width: 1000px;
+  background-color: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  border-collapse: collapse;
+}
+.allocation-table thead {
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  color: white;
+  font-weight: 600;
+}
+.allocation-table th,
+.allocation-table td {
+  padding: 14px 12px;
+  text-align: center;
+  font-size: 0.95rem;
+  border: 1px solid #e0e0e0;
+}
+.allocation-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+.allocation-table tbody tr:hover {
+  background-color: #e6f2ff;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* ===== Responsive Fixes ===== */
+@media (max-width: 768px) {
+  .control-panel {
+    padding: 25px 20px;
+  }
+
+  .top-row {
+    justify-content: center;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .control-panel button {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .allocation-table th,
+  .allocation-table td {
+    font-size: 0.85rem;
+    padding: 10px 8px;
+  }
+
+  .dashboard-card {
+    width: 90%;
+    height: auto;
+    padding: 20px 10px;
+  }
 }
