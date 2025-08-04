@@ -7,7 +7,6 @@ function StudentDashboard() {
   const rollno = state?.rollno?.toUpperCase();
   const studentName = state?.name || "Student";
 
-  // ✅ Memoized initial data
   const initialAllocations = useMemo(() => state?.allocations || [], [state?.allocations]);
 
   const [allocations, setAllocations] = useState([]);
@@ -80,10 +79,11 @@ function StudentDashboard() {
 
             return (
               <div className={`exam-card ${cardStatus}`} key={index}>
-                <h3>{allocation.examName}</h3>
-                <p className="date">
-                  {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.examTime}
-                </p>
+                <h3><strong>{allocation.examName}</strong></h3>
+                <p><strong>CAT:</strong> {allocation.cat} | <strong>Session:</strong> {allocation.session}</p>
+                <p><strong>Date:</strong> {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.examTime || 'N/A'}</p>
+                <p><strong>Subject:</strong> {allocation.subjectWithCode}</p>
+                <p><strong>Hall No:</strong> {allocation.hallNo}</p>
                 <p><strong>Room:</strong> {allocation.room}</p>
                 <p><strong>Invigilator(s):</strong> {allocation.invigilators?.join(" & ")}</p>
               </div>

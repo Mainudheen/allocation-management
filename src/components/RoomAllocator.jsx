@@ -52,18 +52,20 @@ function RoomAllocator() {
       const room = roomNumMatch ? roomNumMatch[0] : `100${i / 30}`;
 
       const rollList = batch.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-      const rollNumbersRange = rollList.length > 1 ? `${rollList[0]} – ${rollList[rollList.length - 1]}` : rollList[0];
+      const rollStart = rollList[0];
+      const rollEnd = rollList[rollList.length - 1];
 
       finalAllocation.push({
         room,
         hallNo,
         totalStudents: batch.length,
-        rollNumbers: rollNumbersRange,
+        rollStart,
+        rollEnd,
         cat,
         session,
         examDate,
         year: yearOfStudy,
-        semNo: semesterDisplay,
+        semester: semesterDisplay,
         subjectWithCode,
         invigilators: [invigilator1, invigilator2]
       });
@@ -97,10 +99,10 @@ function RoomAllocator() {
     }
 
     const wsData = [
-      ["Hall No", "Total Students", "Roll Numbers", "CAT", "Session", "Date", "Year", "Semester", "Subject with Code", "Invigilator 1", "Invigilator 2"],
+      ["Hall No", "Room No", "Total Students", "Roll Start", "Roll End", "CAT", "Session", "Date", "Year", "Semester", "Subject with Code", "Invigilator 1", "Invigilator 2"],
       ...allocations.map(a => [
-        a.hallNo, a.totalStudents, a.rollNumbers,
-        a.cat, a.session, a.examDate, a.year, a.semNo, a.subjectWithCode, a.invigilators[0], a.invigilators[1]
+        a.hallNo, a.room, a.totalStudents, a.rollStart, a.rollEnd,
+        a.cat, a.session, a.examDate, a.year, a.semester, a.subjectWithCode, a.invigilators[0], a.invigilators[1]
       ])
     ];
 
@@ -115,6 +117,7 @@ function RoomAllocator() {
       <h2 className="section-title">📅 Schedule an Exam</h2>
 
       <div className="control-panel">
+        {/* Form Inputs */}
         <div>
           <label>CAT:</label>
           <div className="radio-group compact">
@@ -193,7 +196,7 @@ function RoomAllocator() {
         <button onClick={downloadExcel}>📥 Download Excel</button>
       </div>
 
-      {/* Allocation display */}
+      {/* Display Cards */}
       <div className="card-container">
         {allocations.map((a, idx) => (
           <div className="allocation-card" key={idx}>
@@ -202,10 +205,10 @@ function RoomAllocator() {
             </div>
             <div className="card-body show">
               <p><strong>Room No:</strong> <span>{a.room}</span></p>
-              <p><strong>Students:</strong> <span>{a.rollNumbers} ({a.totalStudents})</span></p>
+              <p><strong>Students:</strong> <span>{a.rollStart} – {a.rollEnd} ({a.totalStudents})</span></p>
               <p><strong>Subject:</strong> <span>{a.subjectWithCode}</span></p>
               <p><strong>Year:</strong> <span>{a.year}</span></p>
-              <p><strong>Semester:</strong> <span>{a.semNo}</span></p>
+              <p><strong>Semester:</strong> <span>{a.semester}</span></p>
               <p><strong>Invigilators:</strong> <span>{a.invigilators.join(" & ")}</span></p>
               <p><strong>Exam:</strong> <span>CAT {a.cat}</span></p>
             </div>

@@ -13,26 +13,20 @@ const PORT = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// MongoDB Connection
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
   .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB error:", err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// 🔎 Check if a roll number is within a range
-function isRollInRange(rollno, rangeStr) {
-  const [start, end] = rangeStr.split("–").map(r => r.trim().toUpperCase());
-  return start <= rollno && rollno <= end;
+// ✅ Check if a roll number lies between rollStart and rollEnd
+function isRollInRange(rollno, start, end) {
+  return rollno.localeCompare(start) >= 0 && rollno.localeCompare(end) <= 0;
 }
 
-// 🔁 Check if a roll number matches any range
-function matchRollNumber(rollno, rollNumbersArray) {
-  return rollNumbersArray?.some(rangeStr => isRollInRange(rollno, rangeStr));
-}
-
-// ✅ Student Login: returns all matched allocations
+// ✅ Student Login: Returns matching allocations
 app.post("/api/student-login", async (req, res) => {
   const { name, rollno, className, year, password } = req.body;
 
@@ -52,12 +46,14 @@ app.post("/api/student-login", async (req, res) => {
     }
 
     const allocations = await Allocation.find({});
-    const matched = allocations.filter(a => matchRollNumber(roll, a.rollNumbers));
+    const matched = allocations.filter(a =>
+      a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
+    );
 
     res.status(200).json({
       message: "Login successful",
       student,
-      allocations: matched || []
+      allocations: matched
     });
 
   } catch (err) {
@@ -66,13 +62,15 @@ app.post("/api/student-login", async (req, res) => {
   }
 });
 
-// ✅ Fetch All Allocations by Roll Number (array)
+// ✅ Fetch allocations for a roll number
 app.get("/api/allocation/:rollno", async (req, res) => {
   const roll = req.params.rollno.trim().toUpperCase();
 
   try {
     const allocations = await Allocation.find({});
-    const matched = allocations.filter(a => matchRollNumber(roll, a.rollNumbers));
+    const matched = allocations.filter(a =>
+      a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
+    );
 
     if (matched.length > 0) {
       res.status(200).json(matched);
@@ -85,7 +83,7 @@ app.get("/api/allocation/:rollno", async (req, res) => {
   }
 });
 
-// ✅ Save Allocations with TTL expiry (3 days after examDate)
+// ✅ Save Allocations with expiry date (3 days after examDate)
 app.post("/api/save-allocations", async (req, res) => {
   try {
     const allocationsWithExpiry = req.body.allocations.map(allocation => ({
@@ -101,7 +99,7 @@ app.post("/api/save-allocations", async (req, res) => {
   }
 });
 
-// ✅ Health Check
+// ✅ Health check route
 app.get("/", (req, res) => {
   res.send("🚀 Student Room Allocation API is running");
 });

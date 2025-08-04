@@ -4,7 +4,7 @@ import HomePage from './components/HomePage';
 import StudentLogin from './components/StudentLogin';
 import AdminAuth from './components/AdminAuth';
 import Dashboard from './components/Dashboard';
-import AdminHomePage from './components/AdminHomepage';
+import AdminHomePage from './components/AdminHomePage';
 import StudentDashboard from './components/StudentDashboard';
 import CatOptionsPage from './components/CatOptionsPage';
 import SpecialTestOptions from './components/SpecialTestOptions';
