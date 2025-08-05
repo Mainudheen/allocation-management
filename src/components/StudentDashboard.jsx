@@ -79,10 +79,18 @@ function StudentDashboard() {
 
             return (
               <div className={`exam-card ${cardStatus}`} key={index}>
+<<<<<<< HEAD
                 <h3>{allocation.examName}</h3>
                 <p className="date">
                   {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.session}
                 </p>
+=======
+                <h3><strong>{allocation.examName}</strong></h3>
+                <p><strong>CAT:</strong> {allocation.cat} | <strong>Session:</strong> {allocation.session}</p>
+                <p><strong>Date:</strong> {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.examTime || 'N/A'}</p>
+                <p><strong>Subject:</strong> {allocation.subjectWithCode}</p>
+                <p><strong>Hall No:</strong> {allocation.hallNo}</p>
+>>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
                 <p><strong>Room:</strong> {allocation.room}</p>
                 <p><strong>Invigilator(s):</strong> {allocation.invigilators?.join(" & ")}</p>
               </div>
