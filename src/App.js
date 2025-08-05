@@ -4,11 +4,13 @@ import HomePage from './components/HomePage';
 import StudentLogin from './components/StudentLogin';
 import AdminAuth from './components/AdminAuth';
 import Dashboard from './components/Dashboard';
-import AdminHomePage from './components/AdminHomepage';
+import AdminHomePage from './components/AdminHomePage';
 import StudentDashboard from './components/StudentDashboard';
 import CatOptionsPage from './components/CatOptionsPage';
 import SpecialTestOptions from './components/SpecialTestOptions';
 import LabAllocator from './components/LabAllocator';
+import ManageAllocations from './components/ManageAllocations';
+import EditAllocation from './components/EditAllocation';
 import './styles.css';
 
 function StudentDashboardWrapper() {
@@ -29,7 +31,9 @@ function App() {
         <Route path="/admin-home" element={<AdminHomePage />} />
         <Route path="/CatOptionsPage" element={<CatOptionsPage />} />
         <Route path="/SpecialTestOptions" element={<SpecialTestOptions />} />
-         <Route path="/LabAllocator" element={<LabAllocator />} />
+        <Route path="/LabAllocator" element={<LabAllocator />} />
+        <Route path="/manage-allotments" element={<ManageAllocations />} />
+        <Route path="/edit-allocation" element={<EditAllocation />} />
       </Routes>
     </Router>
   );

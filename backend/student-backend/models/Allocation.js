@@ -1,11 +1,17 @@
 const mongoose = require("mongoose");
 
 const allocationSchema = new mongoose.Schema({
-  examName: String,
+  examName: String, // Maps to subjectWithCode
   examDate: String,
   room: String,
+  hallNo: String,
+  totalStudents: Number,
+  rollNumbers: String, // Store as range string (e.g., "CS001–CS030")
+  cat: String,
+  session: String,
+  year: String,
+  semNo: String,
   invigilators: [String],
-  rollNumbers: [String], // ← this is now an array
   expiryDate: {
     type: Date,
     required: true,

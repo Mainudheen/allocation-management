@@ -6,8 +6,8 @@ function RoomAllocator() {
   const [cat, setCat] = useState('');
   const [session, setSession] = useState('');
   const [examDate, setExamDate] = useState('');
-  const [subjectWithCode, setSubjectWithCode] = useState('');
-  const [yearOfStudy, setYearOfStudy] = useState('');
+  const [examName, setExamName] = useState('');
+  const [year, setYear] = useState('');
   const [semNo, setSemNo] = useState('');
   const [hallNo, setHallNo] = useState('');
   const [invigilator1, setInvigilator1] = useState('');
@@ -38,7 +38,7 @@ function RoomAllocator() {
     const rooms = roomsInput.split(',').map(r => r.trim());
     const semesterDisplay = semNo && (parseInt(semNo) % 2 === 1 ? `Odd Sem ${semNo}` : `Even Sem ${semNo}`);
 
-    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !yearOfStudy || !semNo || !roomsInput || !hallNo || !invigilator1 || !invigilator2) {
+    if (!rollNumbers.length || !cat || !session || !examDate || !examName || !year || !semNo || !roomsInput || !hallNo || !invigilator1 || !invigilator2) {
       alert("Please complete all fields and upload roll numbers");
       return;
     }
@@ -52,7 +52,7 @@ function RoomAllocator() {
       const room = roomNumMatch ? roomNumMatch[0] : `100${i / 30}`;
 
       const rollList = batch.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-      const rollNumbersRange = rollList.length > 1 ? `${rollList[0]} – ${rollList[rollList.length - 1]}` : rollList[0];
+      const rollNumbersRange = rollList.length > 1 ? `${rollList[0]}–${rollList[rollList.length - 1]}` : rollList[0];
 
       finalAllocation.push({
         room,
@@ -62,9 +62,9 @@ function RoomAllocator() {
         cat,
         session,
         examDate,
-        year: yearOfStudy,
+        year,
         semNo: semesterDisplay,
-        subjectWithCode,
+        examName,
         invigilators: [invigilator1, invigilator2]
       });
     }
@@ -100,7 +100,7 @@ function RoomAllocator() {
       ["Hall No", "Total Students", "Roll Numbers", "CAT", "Session", "Date", "Year", "Semester", "Subject with Code", "Invigilator 1", "Invigilator 2"],
       ...allocations.map(a => [
         a.hallNo, a.totalStudents, a.rollNumbers,
-        a.cat, a.session, a.examDate, a.year, a.semNo, a.subjectWithCode, a.invigilators[0], a.invigilators[1]
+        a.cat, a.session, a.examDate, a.year, a.semNo, a.examName, a.invigilators[0], a.invigilators[1]
       ])
     ];
 
@@ -140,12 +140,12 @@ function RoomAllocator() {
 
         <div>
           <label>Subject with Code:</label>
-          <input type="text" value={subjectWithCode} onChange={e => setSubjectWithCode(e.target.value)} />
+          <input type="text" value={examName} onChange={e => setExamName(e.target.value)} />
         </div>
 
         <div>
           <label>Year of Study:</label>
-          <select value={yearOfStudy} onChange={e => setYearOfStudy(e.target.value)}>
+          <select value={year} onChange={e => setYear(e.target.value)}>
             <option value="">Select Year</option>
             <option value="II">II</option>
             <option value="III">III</option>
@@ -193,7 +193,6 @@ function RoomAllocator() {
         <button onClick={downloadExcel}>📥 Download Excel</button>
       </div>
 
-      {/* Allocation display */}
       <div className="card-container">
         {allocations.map((a, idx) => (
           <div className="allocation-card" key={idx}>
@@ -203,7 +202,7 @@ function RoomAllocator() {
             <div className="card-body show">
               <p><strong>Room No:</strong> <span>{a.room}</span></p>
               <p><strong>Students:</strong> <span>{a.rollNumbers} ({a.totalStudents})</span></p>
-              <p><strong>Subject:</strong> <span>{a.subjectWithCode}</span></p>
+              <p><strong>Subject:</strong> <span>{a.examName}</span></p>
               <p><strong>Year:</strong> <span>{a.year}</span></p>
               <p><strong>Semester:</strong> <span>{a.semNo}</span></p>
               <p><strong>Invigilators:</strong> <span>{a.invigilators.join(" & ")}</span></p>

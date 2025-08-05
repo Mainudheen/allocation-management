@@ -7,7 +7,6 @@ function StudentDashboard() {
   const rollno = state?.rollno?.toUpperCase();
   const studentName = state?.name || "Student";
 
-  // ✅ Memoized initial data
   const initialAllocations = useMemo(() => state?.allocations || [], [state?.allocations]);
 
   const [allocations, setAllocations] = useState([]);
@@ -17,8 +16,8 @@ function StudentDashboard() {
     if (initialAllocations.length > 0) {
       const sorted = [...initialAllocations].sort(
         (a, b) =>
-          new Date(`${a.examDate}T${a.examTime || '00:00'}`) -
-          new Date(`${b.examDate}T${b.examTime || '00:00'}`)
+          new Date(`${a.examDate}T${a.session === 'FN' ? '09:00' : '14:00'}`) -
+          new Date(`${b.examDate}T${b.session === 'FN' ? '09:00' : '14:00'}`)
       );
       setAllocations(sorted);
       setLoading(false);
@@ -32,8 +31,8 @@ function StudentDashboard() {
           const formatted = Array.isArray(data) ? data : [data];
           const sorted = [...formatted].sort(
             (a, b) =>
-              new Date(`${a.examDate}T${a.examTime || '00:00'}`) -
-              new Date(`${b.examDate}T${b.examTime || '00:00'}`)
+              new Date(`${a.examDate}T${a.session === 'FN' ? '09:00' : '14:00'}`) -
+              new Date(`${b.examDate}T${b.session === 'FN' ? '09:00' : '14:00'}`)
           );
           setAllocations(sorted);
           setLoading(false);
@@ -66,7 +65,7 @@ function StudentDashboard() {
       {allocations.length > 0 ? (
         <div className="cards-grid">
           {allocations.map((allocation, index) => {
-            const examDateTime = new Date(`${allocation.examDate}T${allocation.examTime || '23:59'}`);
+            const examDateTime = new Date(`${allocation.examDate}T${allocation.session === 'FN' ? '09:00' : '14:00'}`);
             const now = new Date();
 
             let cardStatus = '';
@@ -82,7 +81,7 @@ function StudentDashboard() {
               <div className={`exam-card ${cardStatus}`} key={index}>
                 <h3>{allocation.examName}</h3>
                 <p className="date">
-                  {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.examTime}
+                  {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.session}
                 </p>
                 <p><strong>Room:</strong> {allocation.room}</p>
                 <p><strong>Invigilator(s):</strong> {allocation.invigilators?.join(" & ")}</p>
