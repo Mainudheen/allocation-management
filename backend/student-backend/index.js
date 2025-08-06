@@ -26,16 +26,7 @@ function isRollInRange(rollno, start, end) {
   return rollno.localeCompare(start) >= 0 && rollno.localeCompare(end) <= 0;
 }
 
-<<<<<<< HEAD
-// 🔁 Check if a roll number matches the range
-function matchRollNumber(rollno, rollNumbers) {
-  return isRollInRange(rollno, rollNumbers);
-}
-
-// ✅ Student Login: returns all matched allocations
-=======
 // ✅ Student Login: Returns matching allocations
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
 app.post("/api/student-login", async (req, res) => {
   const { name, rollno, className, year, password } = req.body;
 
@@ -71,23 +62,7 @@ app.post("/api/student-login", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// ✅ Fetch All Allocations
-app.get("/api/allocations", async (req, res) => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const allocations = await Allocation.find({ examDate: { $gte: today } });
-    res.status(200).json(allocations);
-  } catch (err) {
-    console.error("Fetch allocations error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// ✅ Fetch All Allocations by Roll Number
-=======
 // ✅ Fetch allocations for a roll number
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
 app.get("/api/allocation/:rollno", async (req, res) => {
   const roll = req.params.rollno.trim().toUpperCase();
 
@@ -113,7 +88,6 @@ app.post("/api/save-allocations", async (req, res) => {
   try {
     const allocationsWithExpiry = req.body.allocations.map(allocation => ({
       ...allocation,
-      examName: allocation.subjectWithCode, // Map subjectWithCode to examName
       expiryDate: new Date(new Date(allocation.examDate).getTime() + 3 * 24 * 60 * 60 * 1000)
     }));
 
@@ -124,33 +98,35 @@ app.post("/api/save-allocations", async (req, res) => {
     res.status(500).json({ message: "Failed to save allocations" });
   }
 });
-
-<<<<<<< HEAD
-// ✅ Update Allocation by ID
-app.put("/api/allocation/:id", async (req, res) => {
+//this code is only for Manage-allotments
+// ✅ Fetch all current (non-expired) allocations
+app.get("/api/allocations", async (req, res) => {
   try {
-    const { id } = req.params;
-    const updatedData = {
-      ...req.body,
-      examName: req.body.subjectWithCode, // Map subjectWithCode to examName
-      expiryDate: new Date(new Date(req.body.examDate).getTime() + 3 * 24 * 60 * 60 * 1000)
-    };
-
-    const updatedAllocation = await Allocation.findByIdAndUpdate(id, updatedData, { new: true });
-    if (!updatedAllocation) {
-      return res.status(404).json({ message: "Allocation not found" });
-    }
-    res.status(200).json({ message: "Allocation updated successfully", allocation: updatedAllocation });
+    const now = new Date();
+    const allocations = await Allocation.find({ expiryDate: { $gte: now } });
+    res.status(200).json(allocations);
   } catch (err) {
-    console.error("Update allocation error:", err);
+    console.error("Fetch all allocations error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+app.put("/api/allocation/:id", async (req, res) => {
+  try {
+    const updated = await Allocation.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    );
+    res.status(200).json(updated);
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ message: "Failed to update allocation" });
+  }
+});
 
-// ✅ Health Check
-=======
+
+
 // ✅ Health check route
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
 app.get("/", (req, res) => {
   res.send("🚀 Student Room Allocation API is running");
 });
