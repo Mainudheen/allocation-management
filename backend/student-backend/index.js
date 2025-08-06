@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const Room = require("./models/Room");
+
+
 require("dotenv").config();
 
 const Student = require("./models/Student");
@@ -12,6 +15,9 @@ const PORT = 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+const roomRoutes = require('./routes/roomRoutes'); // ✅ Move this here
+app.use('/api/rooms', roomRoutes);
 
 // ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -25,6 +31,10 @@ mongoose.connect(process.env.MONGO_URI, {
 function isRollInRange(rollno, start, end) {
   return rollno.localeCompare(start) >= 0 && rollno.localeCompare(end) <= 0;
 }
+
+
+
+
 
 // ✅ Student Login: Returns matching allocations
 app.post("/api/student-login", async (req, res) => {

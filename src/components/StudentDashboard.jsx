@@ -7,10 +7,32 @@ function StudentDashboard() {
   const rollno = state?.rollno?.toUpperCase();
   const studentName = state?.name || "Student";
 
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [countdowns, setCountdowns] = useState({});
+
   const initialAllocations = useMemo(() => state?.allocations || [], [state?.allocations]);
 
   const [allocations, setAllocations] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  const timer = setInterval(() => {
+    const now = new Date();
+    const newCountdowns = {};
+
+    allocations.forEach((allocation, idx) => {
+      const key = `${allocation.examDate}-${allocation.room}`;
+      const sessionTime = allocation.session === 'FN' ? '09:00' : '14:00';
+const seconds = getTimeStatus(allocation.examDate, sessionTime, now);
+
+      newCountdowns[key] = seconds;
+    });
+
+    setCountdowns(newCountdowns);
+  }, 1000); // Update every second
+
+  return () => clearInterval(timer);
+}, [allocations]);
 
   useEffect(() => {
     if (initialAllocations.length > 0) {
@@ -55,6 +77,35 @@ function StudentDashboard() {
     return <p className="loading-text">⏳ Loading your exam schedule...</p>;
   }
 
+  function getTimeStatus(examDate, time, now = new Date()) {
+  if (!examDate || !time) return 0;
+  const startTime = new Date(`${examDate}T${time}`);
+  const diffMs = startTime - now;
+  return Math.floor(diffMs / 1000);
+}
+
+
+function formatCountdown(seconds) {
+  if (seconds > 0) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `Starts in ${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  } else if (seconds > -3 * 3600) {
+    const elapsed = Math.abs(seconds);
+    const hrs = Math.floor(elapsed / 3600);
+    const mins = Math.floor((elapsed % 3600) / 60);
+    const secs = elapsed % 60;
+    return `Started ${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} ago`;
+  } else {
+    return `Exam over`;
+  }
+}
+
+
+
+
+
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
@@ -67,6 +118,7 @@ function StudentDashboard() {
           {allocations.map((allocation, index) => {
             const examDateTime = new Date(`${allocation.examDate}T${allocation.session === 'FN' ? '09:00' : '14:00'}`);
             const now = new Date();
+           
 
             let cardStatus = '';
             if (examDateTime.toDateString() === now.toDateString()) {
@@ -76,23 +128,20 @@ function StudentDashboard() {
             } else {
               cardStatus = 'past';
             }
+            const countdownKey = `${allocation.examDate}-${allocation.room}`;
 
             return (
               <div className={`exam-card ${cardStatus}`} key={index}>
-<<<<<<< HEAD
-                <h3>{allocation.examName}</h3>
-                <p className="date">
-                  {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.session}
-                </p>
-=======
                 <h3><strong>{allocation.examName}</strong></h3>
                 <p><strong>CAT:</strong> {allocation.cat} | <strong>Session:</strong> {allocation.session}</p>
                 <p><strong>Date:</strong> {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.examTime || 'N/A'}</p>
                 <p><strong>Subject:</strong> {allocation.subjectWithCode}</p>
                 <p><strong>Hall No:</strong> {allocation.hallNo}</p>
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
                 <p><strong>Room:</strong> {allocation.room}</p>
                 <p><strong>Invigilator(s):</strong> {allocation.invigilators?.join(" & ")}</p>
+                <p><strong>⏳ Countdown:</strong> {formatCountdown(countdowns[countdownKey] || 0)}</p>
+
+
               </div>
             );
           })}

@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import './RoomAllocator.css';
 
 function RoomAllocator() {
+  const { state } = useLocation();
+  const isEditMode = state?.editMode || false;
+  const existingAllocation = state?.allocation || null;
+
+  const [time, setTime] = useState('');
+
+
+  const [allRooms, setAllRooms] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState([]);
+
   const [cat, setCat] = useState('');
   const [session, setSession] = useState('');
   const [examDate, setExamDate] = useState('');
-  const [examName, setExamName] = useState('');
+
   const [year, setYear] = useState('');
   const [semNo, setSemNo] = useState('');
   const [hallNo, setHallNo] = useState('');
@@ -14,7 +25,48 @@ function RoomAllocator() {
   const [invigilator2, setInvigilator2] = useState('');
   const [allocations, setAllocations] = useState([]);
   const [rollNumbers, setRollNumbers] = useState([]);
-  const [roomsInput, updateRoomsInput] = useState('');
+  const [roomsInput, setRoomsInput] = useState('');
+
+  const [subjectWithCode, setSubjectWithCode] = useState('');
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/rooms")
+      .then(res => res.json())
+      .then(data => {
+        // Optional: sort rooms by floor and roomNo
+        const sorted = data.sort((a, b) => {
+          const floorOrder = {
+            'GROUND FLOOR': 0,
+            '1ST FLOOR': 1,
+            '2ND FLOOR': 2,
+            '3RD FLOOR': 3
+          };
+          return floorOrder[a.floor] - floorOrder[b.floor];
+        });
+        setAllRooms(sorted);
+      })
+      .catch(err => {
+        console.error("Failed to fetch rooms", err);
+      });
+  }, []);
+
+
+  useEffect(() => {
+    if (isEditMode && existingAllocation) {
+      setCat(existingAllocation.cat || '');
+      setSession(existingAllocation.session || '');
+      setExamDate(existingAllocation.examDate || '');
+      setSubjectWithCode(existingAllocation.subjectWithCode || '');
+      setYear(existingAllocation.year || '');
+      setSemNo(existingAllocation.semester?.match(/\d+/)?.[0] || '');
+      setHallNo(existingAllocation.hallNo || '');
+      setInvigilator1(existingAllocation.invigilators?.[0] || '');
+      setInvigilator2(existingAllocation.invigilators?.[1] || '');
+      setRoomsInput(existingAllocation.room || '');
+    }
+  }, [isEditMode, existingAllocation]);
+
+
 
   const invigilatorList = [
     'Mrs.Latha', 'Mrs.Kalaivani', 'Mrs.Thangamani',
@@ -34,52 +86,63 @@ function RoomAllocator() {
     reader.readAsBinaryString(file);
   };
 
+  const handleRoomSelection = (e) => {
+    const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
+    setSelectedRooms(selected);
+  };
+
   const allocate = async () => {
-    const rooms = roomsInput.split(',').map(r => r.trim());
     const semesterDisplay = semNo && (parseInt(semNo) % 2 === 1 ? `Odd Sem ${semNo}` : `Even Sem ${semNo}`);
 
-    if (!rollNumbers.length || !cat || !session || !examDate || !examName || !year || !semNo || !roomsInput || !hallNo || !invigilator1 || !invigilator2) {
-      alert("Please complete all fields and upload roll numbers");
+    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !year || !semNo || !selectedRooms.length || !hallNo || !invigilator1 || !invigilator2 || !time) {
+      alert("Please complete all fields including time and upload roll numbers");
       return;
     }
 
+
+    const startingRoomNo = selectedRooms[0]; // Admin selected only one room
+    const startIndex = allRooms.findIndex(r => r.roomNo === startingRoomNo);
+    const usableRooms = allRooms.slice(startIndex); // Use starting room to last
+
+    let studentIndex = 0;
     const finalAllocation = [];
 
-    for (let i = 0; i < rollNumbers.length; i += 30) {
-      const batch = rollNumbers.slice(i, i + 30);
-      const rawRoom = rooms[Math.floor(i / 30)] || '';
-      const roomNumMatch = rawRoom.match(/\d+/);
-      const room = roomNumMatch ? roomNumMatch[0] : `100${i / 30}`;
+    for (let i = 0; i < usableRooms.length && studentIndex < rollNumbers.length; i++) {
+      const room = usableRooms[i];
+      const batchSize = room.benches;
+      const studentsForRoom = rollNumbers.slice(studentIndex, studentIndex + batchSize);
+      const rollList = studentsForRoom.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
-      const rollList = batch.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-<<<<<<< HEAD
-      const rollNumbersRange = rollList.length > 1 ? `${rollList[0]}–${rollList[rollList.length - 1]}` : rollList[0];
-=======
-      const rollStart = rollList[0];
-      const rollEnd = rollList[rollList.length - 1];
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
+      if (!rollList.length) break;
 
       finalAllocation.push({
-        room,
+        room: room.roomNo,
         hallNo,
-        totalStudents: batch.length,
-        rollStart,
-        rollEnd,
+        totalStudents: studentsForRoom.length,
+        rollStart: rollList[0],
+        rollEnd: rollList[rollList.length - 1],
         cat,
         session,
+        time,
         examDate,
-<<<<<<< HEAD
         year,
-        semNo: semesterDisplay,
-        examName,
-=======
-        year: yearOfStudy,
         semester: semesterDisplay,
         subjectWithCode,
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
-        invigilators: [invigilator1, invigilator2]
+        invigilators: [invigilator1, invigilator2],
       });
+
+      studentIndex += batchSize;
     }
+
+    if (session === 'FN' && time >= '12:00') {
+  alert("FN session should be in AM (before 12:00)");
+  return;
+}
+if (session === 'AN' && time < '12:00') {
+  alert("AN session should be in PM (12:00 and after)");
+  return;
+}
+
 
     try {
       const res = await fetch("http://localhost:5000/api/save-allocations", {
@@ -91,14 +154,61 @@ function RoomAllocator() {
       const result = await res.json();
       if (res.ok) {
         alert("Allocations saved successfully!");
-        const sorted = finalAllocation.sort((a, b) => new Date(a.examDate) - new Date(b.examDate));
-        setAllocations(sorted);
+        setAllocations(finalAllocation);
       } else {
         alert("Error saving allocations: " + result.message);
       }
     } catch (err) {
       console.error("❌ Allocation save error:", err);
       alert("Server error during allocation save");
+    }
+  };
+
+
+  const handleUpdate = async () => {
+    const updatedAllocation = {
+      room: roomsInput,
+      hallNo,
+      totalStudents: existingAllocation.totalStudents || 30,
+      rollStart: existingAllocation.rollStart,
+      rollEnd: existingAllocation.rollEnd,
+      cat,
+      session,
+      time,
+      examDate,
+      year,
+      semester: semNo,
+      subjectWithCode,
+      invigilators: [invigilator1, invigilator2],
+    };
+    if (session === 'FN' && time >= '12:00') {
+  alert("FN session should be in AM (before 12:00)");
+  return;
+}
+if (session === 'AN' && time < '12:00') {
+  alert("AN session should be in PM (12:00 and after)");
+  return;
+}
+
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/allocation/${existingAllocation._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedAllocation),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        alert("✅ Allocation updated!");
+        setAllocations([updatedAllocation]);
+      } else {
+        throw new Error(result.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to update allocation");
     }
   };
 
@@ -111,13 +221,8 @@ function RoomAllocator() {
     const wsData = [
       ["Hall No", "Room No", "Total Students", "Roll Start", "Roll End", "CAT", "Session", "Date", "Year", "Semester", "Subject with Code", "Invigilator 1", "Invigilator 2"],
       ...allocations.map(a => [
-<<<<<<< HEAD
-        a.hallNo, a.totalStudents, a.rollNumbers,
-        a.cat, a.session, a.examDate, a.year, a.semNo, a.examName, a.invigilators[0], a.invigilators[1]
-=======
         a.hallNo, a.room, a.totalStudents, a.rollStart, a.rollEnd,
         a.cat, a.session, a.examDate, a.year, a.semester, a.subjectWithCode, a.invigilators[0], a.invigilators[1]
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
       ])
     ];
 
@@ -132,7 +237,6 @@ function RoomAllocator() {
       <h2 className="section-title">📅 Schedule an Exam</h2>
 
       <div className="control-panel">
-        {/* Form Inputs */}
         <div>
           <label>CAT:</label>
           <div className="radio-group compact">
@@ -151,6 +255,22 @@ function RoomAllocator() {
           </div>
         </div>
 
+        {session && (
+          <div>
+            <label>Time ({session === "FN" ? "AM" : "PM"}):</label>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              min={session === "FN" ? "00:00" : "12:00"}
+              max={session === "FN" ? "11:59" : "23:59"}
+              required
+            />
+          </div>
+        )}
+
+
+
         <div>
           <label>Date:</label>
           <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} />
@@ -158,7 +278,8 @@ function RoomAllocator() {
 
         <div>
           <label>Subject with Code:</label>
-          <input type="text" value={examName} onChange={e => setExamName(e.target.value)} />
+          <input type="text" value={subjectWithCode} onChange={e => setSubjectWithCode(e.target.value)} />
+
         </div>
 
         <div>
@@ -182,9 +303,21 @@ function RoomAllocator() {
         </div>
 
         <div>
-          <label>Room Numbers (comma separated):</label>
-          <input type="text" value={roomsInput} onChange={e => updateRoomsInput(e.target.value)} placeholder="Eg: 101,102,103" />
+          <label>Select Rooms (Auto Allocates):</label>
+          <select multiple value={selectedRooms} onChange={handleRoomSelection}>
+            {allRooms.map((room, i) => (
+              <option key={i} value={room.roomNo}>
+                {room.roomNo} - {room.floor} - {room.benches} benches
+              </option>
+            ))}
+          </select>
         </div>
+
+
+        {/* <div>
+          <label>Room Numbers (comma separated):</label>
+          <input type="text" value={roomsInput} onChange={e => setRoomsInput(e.target.value)} placeholder="Eg: 101,102,103" />
+        </div> */}
 
         <div>
           <label>Hall No:</label>
@@ -207,14 +340,18 @@ function RoomAllocator() {
           </select>
         </div>
 
-        <button className="allocate-all-button" onClick={allocate}>Allocate</button>
+
+        <button
+          className="allocate-all-button"
+          onClick={isEditMode ? handleUpdate : allocate}
+        >
+          {isEditMode ? 'Update Allocation' : 'Allocate'}
+        </button>
+
         <button onClick={downloadExcel}>📥 Download Excel</button>
       </div>
 
-<<<<<<< HEAD
-=======
       {/* Display Cards */}
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
       <div className="card-container">
         {allocations.map((a, idx) => (
           <div className="allocation-card" key={idx}>
@@ -223,13 +360,10 @@ function RoomAllocator() {
             </div>
             <div className="card-body show">
               <p><strong>Room No:</strong> <span>{a.room}</span></p>
-<<<<<<< HEAD
-              <p><strong>Students:</strong> <span>{a.rollNumbers} ({a.totalStudents})</span></p>
-              <p><strong>Subject:</strong> <span>{a.examName}</span></p>
-=======
+              <p><strong>Time:</strong> <span>{a.time}</span></p>
+
               <p><strong>Students:</strong> <span>{a.rollStart} – {a.rollEnd} ({a.totalStudents})</span></p>
               <p><strong>Subject:</strong> <span>{a.subjectWithCode}</span></p>
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
               <p><strong>Year:</strong> <span>{a.year}</span></p>
               <p><strong>Semester:</strong> <span>{a.semester}</span></p>
               <p><strong>Invigilators:</strong> <span>{a.invigilators.join(" & ")}</span></p>

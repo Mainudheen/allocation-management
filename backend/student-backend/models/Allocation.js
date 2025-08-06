@@ -18,11 +18,8 @@ const allocationSchema = new mongoose.Schema({
   year: String,
   semNo: String,
   invigilators: [String],
-<<<<<<< HEAD
-=======
   rollStart: String,   // ← Starting roll number of range
   rollEnd: String,     // ← Ending roll number of range
->>>>>>> 10fd86566aa6da26c311e12ba630877c4c05dae0
   expiryDate: {
     type: Date,
     required: true,

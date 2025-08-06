@@ -10,7 +10,8 @@ import CatOptionsPage from './components/CatOptionsPage';
 import SpecialTestOptions from './components/SpecialTestOptions';
 import LabAllocator from './components/LabAllocator';
 import ManageAllocations from './components/ManageAllocations';
-import EditAllocation from './components/EditAllocation';
+import RoomAllocator from './components/RoomAllocator';
+
 import './styles.css';
 
 function StudentDashboardWrapper() {
@@ -33,7 +34,8 @@ function App() {
         <Route path="/SpecialTestOptions" element={<SpecialTestOptions />} />
         <Route path="/LabAllocator" element={<LabAllocator />} />
         <Route path="/manage-allotments" element={<ManageAllocations />} />
-        <Route path="/edit-allocation" element={<EditAllocation />} />
+        <Route path="/RoomAllocator" element={<RoomAllocator />} />
+       
       </Routes>
     </Router>
   );
