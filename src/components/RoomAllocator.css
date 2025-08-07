@@ -132,3 +132,17 @@
     flex-wrap: wrap;
   }
 }
+
+.card-body p {
+  margin: 0.25rem 0;
+  color: #1e293b; /* dark blue text */
+}
+.invigilator-section input{
+  border: 2px solid blue;
+  border-radius: 20px;
+  margin-bottom: 5px;
+}
+.invigilator-section button{
+  border-radius: 50px;
+  background-color: #25adcf;
+}

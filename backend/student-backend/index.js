@@ -134,6 +134,26 @@ app.put("/api/allocation/:id", async (req, res) => {
   }
 });
 
+// ✅ Update only invigilators for an allocation
+app.put("/api/allocations/:id/update-invigilators", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { invigilators } = req.body;
+
+    const updated = await Allocation.findByIdAndUpdate(
+      id,
+      { invigilators },
+      { new: true }
+    );
+
+    res.status(200).json(updated);
+  } catch (err) {
+    console.error("Error updating invigilators:", err);
+    res.status(500).json({ message: "Failed to update invigilators" });
+  }
+});
+
+
 
 
 // ✅ Health check route

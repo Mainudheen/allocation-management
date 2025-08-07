@@ -69,9 +69,16 @@ function RoomAllocator() {
 
 
   const invigilatorList = [
-    'Mrs.Latha', 'Mrs.Kalaivani', 'Mrs.Thangamani',
-    'Mrs.Ramya', 'Mrs.Renuga', 'Mr.Kanan', 'Mr.Natesan'
-  ];
+  "Dr.P.NATESAN", "Dr.R.S.LATHA", "Dr.R.RAJADEVI", "Dr.K.S.KALAIVANI", "Dr.S.KAYALVILI",
+  "Dr.M.VIMALADEVI", "A.S.RENUGADEVI", "N.KANIMOZHI", "P.JAYASHARSHINI", "P.RAMYA",
+  "J.CHARANYA", "S.KEERTHIKA", "S.PRIYANKA", "D.SATHYA", "R.THANGAMANI",
+  "M.SRI KIRUTHIKA", "M.M.RAMYASRI", "N.KANNAN", "M.HARINI", "Dr.T.A.KARTHIKEYAN",
+  "M.MOHANA ARASI", "N.VIGNESHWARAN", "S.GAYATHRI", "R.ARUNKUMAR", "Dr.M.MOHANASUNDARI",
+  "Dr.R.R.RAJALAXMI", "Dr.C.NALINI", "Dr.K.LOGESWARAN", "Dr.K.SATHYA", "S.HAMSANANDHINI",
+  "S.SANTHIYA", "S.BENIL JENNIFFER", "K.SENTHILVADIVU", "M.YOGA", "O.ABHILA ANJU",
+  "M.NEELAMEGAN", "S.GOPINATH", "N.RENUKA", "R.SUBAPRIYA", "V.ARUN ANTONY", "A.VANMATHI"
+];
+
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -94,7 +101,7 @@ function RoomAllocator() {
   const allocate = async () => {
     const semesterDisplay = semNo && (parseInt(semNo) % 2 === 1 ? `Odd Sem ${semNo}` : `Even Sem ${semNo}`);
 
-    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !year || !semNo || !selectedRooms.length || !hallNo || !invigilator1 || !invigilator2 || !time) {
+    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !year || !semNo || !selectedRooms.length || !hallNo || !time) {
       alert("Please complete all fields including time and upload roll numbers");
       return;
     }
@@ -107,6 +114,11 @@ function RoomAllocator() {
     let studentIndex = 0;
     const finalAllocation = [];
 
+    // Shuffle invigilators
+const shuffledInvigilators = [...invigilatorList].sort(() => 0.5 - Math.random());
+let invIndex = 0;
+
+
     for (let i = 0; i < usableRooms.length && studentIndex < rollNumbers.length; i++) {
       const room = usableRooms[i];
       const batchSize = room.benches;
@@ -115,21 +127,27 @@ function RoomAllocator() {
 
       if (!rollList.length) break;
 
-      finalAllocation.push({
-        room: room.roomNo,
-        hallNo,
-        totalStudents: studentsForRoom.length,
-        rollStart: rollList[0],
-        rollEnd: rollList[rollList.length - 1],
-        cat,
-        session,
-        time,
-        examDate,
-        year,
-        semester: semesterDisplay,
-        subjectWithCode,
-        invigilators: [invigilator1, invigilator2],
-      });
+     if (invIndex + 1 >= shuffledInvigilators.length) break; // No more invigilators
+
+const inv1 = shuffledInvigilators[invIndex++];
+const inv2 = shuffledInvigilators[invIndex++];
+
+finalAllocation.push({
+  room: room.roomNo,
+  hallNo,
+  totalStudents: studentsForRoom.length,
+  rollStart: rollList[0],
+  rollEnd: rollList[rollList.length - 1],
+  cat,
+  session,
+  time,
+  examDate,
+  year,
+  semester: semesterDisplay,
+  subjectWithCode,
+  invigilators: [inv1, inv2], // Use assigned invigilators
+});
+
 
       studentIndex += batchSize;
     }
@@ -311,6 +329,7 @@ if (session === 'AN' && time < '12:00') {
               </option>
             ))}
           </select>
+          
         </div>
 
 
@@ -324,21 +343,7 @@ if (session === 'AN' && time < '12:00') {
           <input type="text" value={hallNo} onChange={e => setHallNo(e.target.value)} />
         </div>
 
-        <div>
-          <label>Invigilator 1:</label>
-          <select value={invigilator1} onChange={e => setInvigilator1(e.target.value)}>
-            <option value="">Select</option>
-            {invigilatorList.map((i, index) => <option key={index} value={i}>{i}</option>)}
-          </select>
-        </div>
-
-        <div>
-          <label>Invigilator 2:</label>
-          <select value={invigilator2} onChange={e => setInvigilator2(e.target.value)}>
-            <option value="">Select</option>
-            {invigilatorList.map((i, index) => <option key={index} value={i}>{i}</option>)}
-          </select>
-        </div>
+        
 
 
         <button
