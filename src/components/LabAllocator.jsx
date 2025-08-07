@@ -93,7 +93,7 @@ function LabAllocator() {
       invigilators: [inv1, inv2]
     });
   }
-
+  //correctly
   setAllocations(finalAllocations);
 };
 const downloadExcel = () => {

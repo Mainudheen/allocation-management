@@ -155,7 +155,7 @@ app.put("/api/allocations/:id/update-invigilators", async (req, res) => {
 
 
 
-
+//manage
 // ✅ Health check route
 app.get("/", (req, res) => {
   res.send("🚀 Student Room Allocation API is running");
