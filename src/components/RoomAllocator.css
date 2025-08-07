@@ -83,7 +83,7 @@
   align-self: flex-start;
   transition: background-color 0.2s ease;
 }
-
+/*styles*/
 .control-panel button:hover {
   background-color: #1e40af;
 }

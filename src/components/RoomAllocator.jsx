@@ -99,7 +99,7 @@ function RoomAllocator() {
       return;
     }
 
-
+    /*manage*/
     const startingRoomNo = selectedRooms[0]; // Admin selected only one room
     const startIndex = allRooms.findIndex(r => r.roomNo === startingRoomNo);
     const usableRooms = allRooms.slice(startIndex); // Use starting room to last

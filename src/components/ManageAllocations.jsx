@@ -85,5 +85,5 @@ const handleEdit = (allocation) => {
     </div>
   );
 }
-
+/*manage*/
 export default ManageAllocations;  
