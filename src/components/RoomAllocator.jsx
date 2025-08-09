@@ -69,15 +69,15 @@ function RoomAllocator() {
 
 
   const invigilatorList = [
-  "Dr.P.NATESAN", "Dr.R.S.LATHA", "Dr.R.RAJADEVI", "Dr.K.S.KALAIVANI", "Dr.S.KAYALVILI",
-  "Dr.M.VIMALADEVI", "A.S.RENUGADEVI", "N.KANIMOZHI", "P.JAYASHARSHINI", "P.RAMYA",
-  "J.CHARANYA", "S.KEERTHIKA", "S.PRIYANKA", "D.SATHYA", "R.THANGAMANI",
-  "M.SRI KIRUTHIKA", "M.M.RAMYASRI", "N.KANNAN", "M.HARINI", "Dr.T.A.KARTHIKEYAN",
-  "M.MOHANA ARASI", "N.VIGNESHWARAN", "S.GAYATHRI", "R.ARUNKUMAR", "Dr.M.MOHANASUNDARI",
-  "Dr.R.R.RAJALAXMI", "Dr.C.NALINI", "Dr.K.LOGESWARAN", "Dr.K.SATHYA", "S.HAMSANANDHINI",
-  "S.SANTHIYA", "S.BENIL JENNIFFER", "K.SENTHILVADIVU", "M.YOGA", "O.ABHILA ANJU",
-  "M.NEELAMEGAN", "S.GOPINATH", "N.RENUKA", "R.SUBAPRIYA", "V.ARUN ANTONY", "A.VANMATHI"
-];
+    "Dr.P.NATESAN", "Dr.R.S.LATHA", "Dr.R.RAJADEVI", "Dr.K.S.KALAIVANI", "Dr.S.KAYALVILI",
+    "Dr.M.VIMALADEVI", "A.S.RENUGADEVI", "N.KANIMOZHI", "P.JAYASHARSHINI", "P.RAMYA",
+    "J.CHARANYA", "S.KEERTHIKA", "S.PRIYANKA", "D.SATHYA", "R.THANGAMANI",
+    "M.SRI KIRUTHIKA", "M.M.RAMYASRI", "N.KANNAN", "M.HARINI", "Dr.T.A.KARTHIKEYAN",
+    "M.MOHANA ARASI", "N.VIGNESHWARAN", "S.GAYATHRI", "R.ARUNKUMAR", "Dr.M.MOHANASUNDARI",
+    "Dr.R.R.RAJALAXMI", "Dr.C.NALINI", "Dr.K.LOGESWARAN", "Dr.K.SATHYA", "S.HAMSANANDHINI",
+    "S.SANTHIYA", "S.BENIL JENNIFFER", "K.SENTHILVADIVU", "M.YOGA", "O.ABHILA ANJU",
+    "M.NEELAMEGAN", "S.GOPINATH", "N.RENUKA", "R.SUBAPRIYA", "V.ARUN ANTONY", "A.VANMATHI"
+  ];
 
 
   const handleFileUpload = (e) => {
@@ -115,8 +115,8 @@ function RoomAllocator() {
     const finalAllocation = [];
 
     // Shuffle invigilators
-const shuffledInvigilators = [...invigilatorList].sort(() => 0.5 - Math.random());
-let invIndex = 0;
+    const shuffledInvigilators = [...invigilatorList].sort(() => 0.5 - Math.random());
+    let invIndex = 0;
 
 
     for (let i = 0; i < usableRooms.length && studentIndex < rollNumbers.length; i++) {
@@ -127,39 +127,66 @@ let invIndex = 0;
 
       if (!rollList.length) break;
 
-     if (invIndex + 1 >= shuffledInvigilators.length) break; // No more invigilators
+      if (invIndex + 1 >= shuffledInvigilators.length) break; // No more invigilators
 
-const inv1 = shuffledInvigilators[invIndex++];
-const inv2 = shuffledInvigilators[invIndex++];
+      const inv1 = shuffledInvigilators[invIndex++];
+      const inv2 = shuffledInvigilators[invIndex++];
 
-finalAllocation.push({
-  room: room.roomNo,
-  hallNo,
-  totalStudents: studentsForRoom.length,
-  rollStart: rollList[0],
-  rollEnd: rollList[rollList.length - 1],
-  cat,
-  session,
-  time,
-  examDate,
-  year,
-  semester: semesterDisplay,
-  subjectWithCode,
-  invigilators: [inv1, inv2], // Use assigned invigilators
-});
+      finalAllocation.push({
+        room: room.roomNo,
+        hallNo,
+        totalStudents: studentsForRoom.length,
+        rollStart: rollList[0],
+        rollEnd: rollList[rollList.length - 1],
+        cat,
+        session,
+        time,
+        examDate,
+        year,
+        semester: semesterDisplay,
+        subjectWithCode,
+        invigilators: [inv1, inv2], // Use assigned invigilators
+      });
 
 
       studentIndex += batchSize;
     }
 
+    if (studentIndex < rollNumbers.length) {
+      const leftover = rollNumbers
+        .slice(studentIndex)
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+      finalAllocation.push({
+        room: "❌ No Hall Available",
+        hallNo: "N/A",
+        totalStudents: leftover.length,
+        rollStart: leftover[0],
+        rollEnd: leftover[leftover.length - 1],
+        leftoverRollNumbers: leftover,
+        cat,
+        session,
+        time,
+        examDate,
+        year,
+        semester: semesterDisplay,
+        subjectWithCode,
+        invigilators: ["-", "-"],
+        isUnallocated: true,
+      });
+    }
+
+
+
+
     if (session === 'FN' && time >= '12:00') {
-  alert("FN session should be in AM (before 12:00)");
-  return;
-}
-if (session === 'AN' && time < '12:00') {
-  alert("AN session should be in PM (12:00 and after)");
-  return;
-}
+      alert("FN session should be in AM (before 12:00)");
+      return;
+    }
+    if (session === 'AN' && time < '12:00') {
+      alert("AN session should be in PM (12:00 and after)");
+      return;
+    }
 
 
     try {
@@ -185,7 +212,8 @@ if (session === 'AN' && time < '12:00') {
 
   const handleUpdate = async () => {
     const updatedAllocation = {
-      room: roomsInput,
+      //room: roomsInput,
+       room: selectedRooms.join(", "),
       hallNo,
       totalStudents: existingAllocation.totalStudents || 30,
       rollStart: existingAllocation.rollStart,
@@ -200,14 +228,19 @@ if (session === 'AN' && time < '12:00') {
       invigilators: [invigilator1, invigilator2],
     };
     if (session === 'FN' && time >= '12:00') {
-  alert("FN session should be in AM (before 12:00)");
-  return;
-}
-if (session === 'AN' && time < '12:00') {
-  alert("AN session should be in PM (12:00 and after)");
-  return;
-}
+      alert("FN session should be in AM (before 12:00)");
+      return;
+    }
+    if (session === 'AN' && time < '12:00') {
+      alert("AN session should be in PM (12:00 and after)");
+      return;
+    }
+    const allocations = []; // your normal allocation building logic here
+  
 
+
+
+    setAllocations(allocations); // update state
 
     try {
       const res = await fetch(`http://localhost:5000/api/allocation/${existingAllocation._id}`, {
@@ -249,6 +282,7 @@ if (session === 'AN' && time < '12:00') {
     XLSX.utils.book_append_sheet(wb, ws, "Allocations");
     XLSX.writeFile(wb, `Allocations_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
+
 
   return (
     <div className="dashboard-container">
@@ -329,7 +363,7 @@ if (session === 'AN' && time < '12:00') {
               </option>
             ))}
           </select>
-          
+
         </div>
 
 
@@ -343,7 +377,7 @@ if (session === 'AN' && time < '12:00') {
           <input type="text" value={hallNo} onChange={e => setHallNo(e.target.value)} />
         </div>
 
-        
+
 
 
         <button
@@ -357,7 +391,7 @@ if (session === 'AN' && time < '12:00') {
       </div>
 
       {/* Display Cards */}
-      <div className="card-container">
+     {/*  {  <div className="card-container">
         {allocations.map((a, idx) => (
           <div className="allocation-card" key={idx}>
             <div className="card-header">
@@ -376,7 +410,37 @@ if (session === 'AN' && time < '12:00') {
             </div>
           </div>
         ))}
+      </div> } */}
+       <div className="card-container">
+  {allocations.map((a, idx) => (
+    <div className="allocation-card" key={idx}>
+      <div className="card-header">
+        🏫 Hall {a.hallNo} | 📅 {a.examDate} | ⏱️ {a.session}
       </div>
+      <div className="card-body show">
+        <p><strong>Room No:</strong> <span>{a.room}</span></p>
+        <p><strong>Time:</strong> <span>{a.time}</span></p>
+        <p><strong>Students:</strong> <span>{a.rollStart} – {a.rollEnd} ({a.totalStudents})</span></p>
+        <p><strong>Subject:</strong> <span>{a.subjectWithCode}</span></p>
+        <p><strong>Year:</strong> <span>{a.year}</span></p>
+        <p><strong>Semester:</strong> <span>{a.semester}</span></p>
+        <p><strong>Invigilators:</strong> <span>{a.invigilators.join(" & ")}</span></p>
+        <p><strong>Exam:</strong> <span>CAT {a.cat}</span></p>
+
+        {a.isUnallocated && (
+          <div style={{ marginTop: "10px", color: "red" }}>
+            <strong>Unallocated Roll Numbers:</strong>
+            <br />
+            {a.leftoverRollNumbers.join(", ")}
+          </div>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
+      
+
     </div>
   );
 }
