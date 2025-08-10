@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Room = require("./models/Room");
+const LabAllocation = require("./models/LabAllocate");
 
 
 require("dotenv").config();
@@ -60,10 +61,15 @@ app.post("/api/student-login", async (req, res) => {
       a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
     );
 
+     const labAllocations = await LabAllocation.find({});
+    const matchedLabAllocations = labAllocations.filter(a =>
+      a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
+    );
+
     res.status(200).json({
       message: "Login successful",
       student,
-      allocations: matched
+      allocations: [...matched, ...matchedLabAllocations]
     });
 
   } catch (err) {
@@ -78,9 +84,14 @@ app.get("/api/allocation/:rollno", async (req, res) => {
 
   try {
     const allocations = await Allocation.find({});
+    const labAllocations = await LabAllocation.find({});
     const matched = allocations.filter(a =>
       a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
     );
+    const matchedLab = labAllocations.filter(a =>
+  a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
+);
+const combined = [...matchedExam, ...matchedLab];
 
     if (matched.length > 0) {
       res.status(200).json(matched);
@@ -106,6 +117,66 @@ app.post("/api/save-allocations", async (req, res) => {
   } catch (err) {
     console.error("Saving allocations error:", err);
     res.status(500).json({ message: "Failed to save allocations" });
+  }
+});
+
+app.post('/api/save-lab-allocations', async (req, res) => {
+  try {
+    const allocations = req.body.allocations.map(a => ({
+      ...a,
+      expiryDate: new Date(new Date(a.examDate).getTime() + 3 * 24 * 60 * 60 * 1000)
+    }));
+
+    await LabAllocation.insertMany(allocations);
+    res.status(200).json({ message: "Lab allocations saved" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to save lab allocations" });
+  }
+});
+
+app.get("/api/lab-allocations", async (req, res) => {
+  try {
+    const now = new Date();
+    const labAllocations = await LabAllocation.find({ expiryDate: { $gte: now } });
+    res.status(200).json(labAllocations);
+  } catch (err) {
+    console.error("Fetch all lab allocations error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Update lab allocation by ID
+app.put("/api/lab-allocation/:id", async (req, res) => {
+  try {
+    const updated = await LabAllocation.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    );
+    res.status(200).json(updated);
+  } catch (err) {
+    console.error("Lab allocation update error:", err);
+    res.status(500).json({ message: "Failed to update lab allocation" });
+  }
+});
+
+// Update invigilators in a lab allocation
+app.put("/api/lab-allocations/:id/update-invigilators", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { invigilators } = req.body;
+
+    const updated = await LabAllocation.findByIdAndUpdate(
+      id,
+      { invigilators },
+      { new: true }
+    );
+
+    res.status(200).json(updated);
+  } catch (err) {
+    console.error("Error updating lab invigilators:", err);
+    res.status(500).json({ message: "Failed to update lab invigilators" });
   }
 });
 //this code is only for Manage-allotments
