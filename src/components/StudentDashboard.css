@@ -58,6 +58,12 @@
   color: #ffffff;
 }
 
+.exam-card.lab-exam {
+  background-color: #06b097; /* light grey */
+  border: 1px solid #bbb;
+}
+
+
 .exam-card h3 {
   font-size: 1.2rem;
   font-weight: 600;

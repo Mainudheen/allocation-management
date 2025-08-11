@@ -132,15 +132,20 @@ function StudentDashboard() {
             } else {
               cardStatus = 'past';
             }
+
+            const isLabExam = Boolean(allocation.lab);
             const countdownKey = `${allocation.examDate}-${allocation.room}`;
 
             return (
-              <div className={`exam-card ${cardStatus}`} key={index}>
+               <div
+      className={`exam-card ${cardStatus} ${isLabExam ? 'lab-exam' : ''}`}
+      key={index}
+    >
                 <h3><strong>{allocation.examName}</strong></h3>
                 <p><strong>CAT:</strong> {allocation.cat || 'N/A'} | <strong>Session:</strong> {allocation.session}</p>
                 <p><strong>Date:</strong> {new Date(allocation.examDate).toLocaleDateString('en-GB')} 🕒 {allocation.examTime || allocation.time || 'N/A'}</p>
                 <p><strong>Subject:</strong> {allocation.subjectWithCode || 'N/A'}</p>
-                <p><strong>Hall No:</strong> {allocation.hallNo || allocation.lab || 'N/A'}</p>
+               {/*  <p><strong>Hall No:</strong> {allocation.hallNo || allocation.lab || 'N/A'}</p> */}
                 <p><strong>Room:</strong> {allocation.room || allocation.lab || 'N/A'}</p>
                 <p><strong>Invigilator(s):</strong> {allocation.invigilators?.join(" & ") || 'N/A'}</p>
                 <p><strong>⏳ Countdown:</strong> {formatCountdown(countdowns[countdownKey] || 0)}</p>
