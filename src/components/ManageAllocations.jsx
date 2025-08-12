@@ -189,7 +189,7 @@ function ManageAllocations() {
             } else {
               cardStatus = 'past';
             }
-
+            //PAST COLOR IS RED
             return (
               <div className={`exam-card ${cardStatus}`} key={index}>
                 <div onClick={() => handleEdit(allocation)} style={{ cursor: "pointer" }}>
