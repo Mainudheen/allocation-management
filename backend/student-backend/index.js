@@ -91,9 +91,9 @@ app.get("/api/allocation/:rollno", async (req, res) => {
     const matchedLab = labAllocations.filter(a =>
   a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
 );
-const combined = [...matchedExam, ...matchedLab];
+const combined = [...matched, ...matchedLab];
 
-    if (matched.length > 0) {
+    if (combined.length > 0) {
       res.status(200).json(matched);
     } else {
       res.status(404).json({ message: "No allocation found" });

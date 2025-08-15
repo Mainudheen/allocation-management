@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Import Excel function
 function importExcel() {
-  const workbook = XLSX.readFile("students.xlsx"); // your file name
+  const workbook = XLSX.readFile("ml-students.xlsx"); // your file name
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const data = XLSX.utils.sheet_to_json(sheet);
 
@@ -50,6 +50,7 @@ function importExcel() {
     .then(() => {
       console.log("✅ All students imported successfully!");
       mongoose.disconnect();
+      
     })
     .catch(err => {
       console.error("❌ Error inserting students:", err);
