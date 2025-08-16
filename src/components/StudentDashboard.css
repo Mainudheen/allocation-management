@@ -39,10 +39,16 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   background-color: #ffffff;
   color: #2c3e50;
-  cursor: pointer;
+  text-align: left;
 }
 
-/* Full background colors for different card types */
+.exam-card .subject-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+/* Background colors for card status */
 .exam-card.upcoming {
   background-color: #007bff;
   color: #ffffff;
@@ -54,26 +60,20 @@
 }
 
 .exam-card.past {
-  background-color: #e74c3c;
-  color: #ffffff;
+  background-color: #d6d6d6;
+  color: #555;
 }
 
 .exam-card.lab-exam {
-  background-color: #06b097; /* light grey */
-  border: 1px solid #bbb;
+  background-color: #06b097;
+  color: #fff;
 }
 
-
+/* Typography inside card */
 .exam-card h3 {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-}
-
-.exam-card .date {
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
-  opacity: 0.9;
 }
 
 .exam-card p {
@@ -84,7 +84,7 @@
 /* Hover effect */
 .exam-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   filter: brightness(1.03);
 }
 
