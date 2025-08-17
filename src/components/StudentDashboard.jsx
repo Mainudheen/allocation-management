@@ -146,6 +146,7 @@ function StudentDashboard() {
               >
                 {/* Subject name at the top */}
                 <h2 className="subject-title">{subjectName}</h2>
+                {/*Subject*/}
 
                 <p><strong>Exam:</strong> {allocation.subjectWithCode|| "N/A"}</p>
                 <p>
