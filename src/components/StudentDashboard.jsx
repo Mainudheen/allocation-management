@@ -151,6 +151,8 @@ function StudentDashboard() {
                 <p><strong>Exam:</strong> {allocation.subjectWithCode|| "N/A"}</p>
                 <p>
                   <strong>CAT:</strong> {allocation.cat || "N/A"} |{" "}
+                </p>
+                <p>
                   <strong>Session:</strong> {allocation.session}
                 </p>
                 <p>
@@ -159,10 +161,10 @@ function StudentDashboard() {
                   {allocation.examTime || allocation.time || "N/A"}
                 </p>
                 <p><strong>Room:</strong> {allocation.room || allocation.lab || "N/A"}</p>
-                <p>
+               {/*  <p>
                   <strong>Invigilator(s):</strong>{" "}
                   {allocation.invigilators?.join(" & ") || "N/A"}
-                </p>
+                </p> */}
                 <p>
                   <strong>⏳ Countdown:</strong>{" "}
                   {formatCountdown(countdowns[countdownKey] || 0)}

@@ -11,6 +11,7 @@ import SpecialTestOptions from './components/SpecialTestOptions';
 import LabAllocator from './components/LabAllocator';
 import ManageAllocations from './components/ManageAllocations';
 import RoomAllocator from './components/RoomAllocator';
+import StudentManager from './components/StudentManager';
 
 import './styles.css';
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="/LabAllocator" element={<LabAllocator />} />
         <Route path="/manage-allotments" element={<ManageAllocations />} />
         <Route path="/RoomAllocator" element={<RoomAllocator />} />
+        <Route path="/StudentManage" element={<StudentManager />} />
        
       </Routes>
     </Router>

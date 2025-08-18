@@ -15,6 +15,10 @@ function AdminHomePage() {
     {
       navigate('/SpecialTestOptions');
     }
+    else if(title === 'Update Details')
+    {
+      navigate('/StudentManage');
+    }
     else {
       alert(`${title} page will be added soon.`);
     }
