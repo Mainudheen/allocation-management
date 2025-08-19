@@ -1,0 +1,54 @@
+.exam-allocator {
+  padding: 20px;
+  background: #f9fbff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.students-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.student-roll {
+  padding: 10px 14px;
+  background: #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.student-roll:hover {
+  background: #ddd;
+}
+
+.student-roll.selected {
+  background: #4caf50;
+  color: white;
+  font-weight: bold;
+}
+
+.allocate-btn {
+  background: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.allocate-btn:hover {
+  background: #0056b3;
+}
