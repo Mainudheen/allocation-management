@@ -31,15 +31,32 @@ function AdminHomePage() {
   ];
 
   return (
-    <div className="dashboard-container">
-      <div className="college-header">
-        <img
-          src="https://rchi2019.kongu.edu/images/header.png"
-          alt="Kongu Engineering College"
-          className="college-banner"
-        />
-      </div>
+    <>
+    <nav className="navbar">
+        <div className="navbar-left">
+          {/* <img
+            src="https://kms.kongu.edu/images/kongu.jpg"
+            alt="College Logo"
+            className="college-logo"
+          /> */}
+          <span className="college-name">AUTOMATED HALL SCHEDULER</span>
+        </div>
 
+        <div className="navbar-right">
+          <button className="nav-button" onClick={() => navigate('/')}>Home</button>
+          <button
+            className="nav-button"
+            onClick={() => {
+              localStorage.clear();
+              navigate('/');
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </nav>
+    <div className="dashboard-container">
+      
       <h1 className="admin-heading">Welcome, Admin</h1>
 
       <div className="card-grid">
@@ -52,6 +69,7 @@ function AdminHomePage() {
         ))}
       </div>
     </div>
+    </>
   );
 }
 

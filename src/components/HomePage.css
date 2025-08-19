@@ -68,6 +68,95 @@
 .admin-card button:hover {
   background-color: #c0365f;
 } */
+/* === PAGE BACKGROUND === */
+body {
+  background-color: #E6E6FA; /* Light Lavender */
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* === NAVBAR STYLING === */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #0b1d51, #1e3a8a);
+  padding: 1rem 2rem;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.college-logo {
+  height: 45px;
+  margin-right: 12px;
+}
+
+.college-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-button {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: #334b9b;
+  color: white;
+  border-color: #334b9b;
+}
+
+/* === DROPDOWN STYLING === */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  min-width: 150px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 1001;
+}
+
+.dropdown-content div {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: #0f172a;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-content div:hover {
+  background-color: #f0f0f0;
+}
 
 .holographic-container {
   display: flex;
@@ -80,7 +169,7 @@
 .holographic-card {
   width: 300px;
   height: 200px;
-  background: #070505;
+  background: linear-gradient(135deg, #0b1d51, #1e3a8a);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -88,11 +177,12 @@
   overflow: hidden;
   border-radius: 15px;
   transition: all 0.5s ease;
-  margin-left: 30px;
+  margin: 0 20px;
+  cursor: pointer;
 }
 
 .holographic-card h2 {
-  color: #0ff;
+  color: white;
   font-size: 2rem;
   position: relative;
   z-index: 2;

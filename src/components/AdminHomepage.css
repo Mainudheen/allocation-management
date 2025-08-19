@@ -8,6 +8,57 @@
     transform: translateY(0);
   }
 }
+/* ====== Navbar ====== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #0d1b54;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 2rem;
+  border-radius: 0; /* removed curve */
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.college-logo {
+  height: 50px;
+  margin-right: 1rem;
+  border-radius: 4px;
+}
+
+.college-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.navbar-right {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-button {
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  border: 2px solid #ffffff;
+  background-color: transparent;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: white;
+  color: #0d1b54;
+}
+
 
 /* ===== Overall Layout ===== */
 .dashboard-container {
@@ -20,6 +71,7 @@
   flex-direction: column;
   align-items: center;
   animation: slideUpFadeIn 0.8s ease forwards;
+  max-width: 1200px;
 }
 
 /* ===== Header Banner ===== */
@@ -37,7 +89,7 @@
 /* ===== Main Dashboard Title ===== */
 .dashboard-title {
   text-align: center;
-  color: #0077ff;
+  color: #ffffff;
   font-size: 32px;
   font-weight: 700;
   margin-bottom: 40px;
@@ -55,7 +107,7 @@
 .dashboard-card {
   width: 250px;
   height: 180px;
-  background: #ffffff;
+  background:linear-gradient(145deg, #1a2a6c, #0d1b54);
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 140, 255, 0.1);
   border: 1px solid #e0f2ff;
@@ -95,20 +147,20 @@
 
 .dashboard-card .icon {
   font-size: 2rem;
-  color: #0077ff;
+  color: #ffffff;
   margin-bottom: 10px;
   z-index: 2;
 }
 .dashboard-card h3 {
   font-size: 20px;
-  color: #0077ff;
+  color: #ffffff;
   font-weight: 600;
   margin-bottom: 6px;
   z-index: 2;
 }
 .dashboard-card p {
   font-size: 14px;
-  color: #555;
+  color: #ffffff;
   z-index: 2;
 }
 
@@ -247,4 +299,19 @@
     height: auto;
     padding: 20px 10px;
   }
+    .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .navbar-right {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-button {
+    width: 100%;
+  }
 }
+

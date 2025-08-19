@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './StudentDashboard.css';
 
 function StudentDashboard() {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const rollno = state?.rollno?.toUpperCase();
   const studentName = state?.name || "Student";
 
@@ -106,6 +107,33 @@ function StudentDashboard() {
   }
 
   return (
+
+    <>
+      {/* ✅ NAVBAR */}
+      <nav className="navbar">
+        <div className="navbar-left">
+          {/* <img
+            src="https://kms.kongu.edu/images/kongu.jpg"
+            alt="College Logo"
+            className="college-logo"
+          /> */}
+          <span className="college-name">AUTOMATED HALL SCHEDULER</span>
+        </div>
+
+        <div className="navbar-right">
+          <button className="nav-button" onClick={() => navigate('/')}>Home</button>
+          <button
+            className="nav-button"
+            onClick={() => {
+              localStorage.clear();
+              navigate('/');
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </nav>
+
     <div className="dashboard-container">
       <header className="dashboard-header">
         <h1>
@@ -177,6 +205,7 @@ function StudentDashboard() {
         <p className="error-text">❌ No exams scheduled. Please check back later.</p>
       )}
     </div>
+    </>
   );
 }
 
