@@ -19,7 +19,7 @@ function StudentDashboard() {
       const newCountdowns = {};
 
       allocations.forEach((allocation) => {
-        const key = `${allocation.examDate}-${allocation.room}`;
+        const key = `${allocation.examDate}-${allocation.room || allocation.lab || allocation.className}`;
         const sessionTime =
           allocation.time ||
           allocation.examTime ||
@@ -160,39 +160,41 @@ function StudentDashboard() {
             }
 
             const isLabExam = Boolean(allocation.lab);
-            const countdownKey = `${allocation.examDate}-${allocation.room}`;
+            const isClassExam = Boolean(allocation.className && !allocation.room && !allocation.lab);
+            const countdownKey = `${allocation.examDate}-${allocation.room || allocation.lab || allocation.className}`;
 
-            // Extract subject name only (remove code if format is "CODE - NAME")
             const subjectName = allocation.subjectWithCode
               ? allocation.subjectWithCode.split("-").slice(1).join("-").trim()
               : allocation.subjectWithCode;
 
             return (
               <div
-                className={`exam-card ${cardStatus} ${isLabExam ? "lab-exam" : ""}`}
+                className={`exam-card ${cardStatus} ${
+                  isLabExam ? "lab-exam" : isClassExam ? "class-exam" : ""
+                }`}
                 key={index}
               >
                 {/* Subject name at the top */}
-                <h2 className="subject-title">{subjectName}</h2>
-                {/*Subject*/}
+                <h2 className="subject-title">{subjectName || "Exam"}</h2>
 
-                <p><strong>Exam:</strong> {allocation.subjectWithCode|| "N/A"}</p>
-                <p>
-                  <strong>CAT:</strong> {allocation.cat || "N/A"} |{" "}
-                </p>
-                <p>
-                  <strong>Session:</strong> {allocation.session}
-                </p>
+                <p><strong>Exam:</strong> {allocation.subjectWithCode || "N/A"}</p>
+                <p><strong>CAT:</strong> {allocation.cat || "N/A"}</p>
+                <p><strong>Session:</strong> {allocation.session}</p>
                 <p>
                   <strong>Date:</strong>{" "}
                   {new Date(allocation.examDate).toLocaleDateString("en-GB")} 🕒{" "}
                   {allocation.examTime || allocation.time || "N/A"}
                 </p>
-                <p><strong>Room:</strong> {allocation.room || allocation.lab || "N/A"}</p>
-               {/*  <p>
-                  <strong>Invigilator(s):</strong>{" "}
-                  {allocation.invigilators?.join(" & ") || "N/A"}
-                </p> */}
+
+                {/* Show based on type */}
+                {isLabExam ? (
+                  <p><strong>Lab:</strong> {allocation.lab}</p>
+                ) : isClassExam ? (
+                  <p><strong>Class:</strong> {allocation.className}</p>
+                ) : (
+                  <p><strong>Room:</strong> {allocation.room}</p>
+                )}
+
                 <p>
                   <strong>⏳ Countdown:</strong>{" "}
                   {formatCountdown(countdowns[countdownKey] || 0)}

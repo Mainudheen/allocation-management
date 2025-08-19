@@ -127,6 +127,13 @@ app.delete("/api/students/delete-by-class/:className", async (req, res) => {
 });
 
 /* -------------------- STUDENT LOGIN -------------------- */
+// ✅ Helper: Check if roll number is in string range (e.g. "23ADR101 - 23ADR130")
+function isRollInStringRange(roll, rangeStr) {
+  if (!rangeStr) return false;
+  const parts = rangeStr.split("-").map((p) => p.trim().toUpperCase());
+  if (parts.length !== 2) return false;
+  return isRollInRange(roll, parts[0], parts[1]); // reuse your existing range logic
+}
 
 // ✅ Student Login: Returns matching allocations
 app.post("/api/student-login", async (req, res) => {
@@ -149,7 +156,11 @@ app.post("/api/student-login", async (req, res) => {
 
     const allocations = await Allocation.find({});
     const matched = allocations.filter(
-      (a) => a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
+      (a) =>
+        // RoomAllocator format
+        (a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)) ||
+        // ClassExamAllocator string format
+        (a.rollNumbers && isRollInStringRange(roll, a.rollNumbers))
     );
 
     const labAllocations = await LabAllocation.find({});
@@ -174,10 +185,13 @@ app.get("/api/allocation/:rollno", async (req, res) => {
 
   try {
     const allocations = await Allocation.find({});
-    const labAllocations = await LabAllocation.find({});
     const matched = allocations.filter(
-      (a) => a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
+      (a) =>
+        (a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)) ||
+        (a.rollNumbers && isRollInStringRange(roll, a.rollNumbers))
     );
+
+    const labAllocations = await LabAllocation.find({});
     const matchedLab = labAllocations.filter(
       (a) => a.rollStart && a.rollEnd && isRollInRange(roll, a.rollStart, a.rollEnd)
     );
@@ -195,10 +209,11 @@ app.get("/api/allocation/:rollno", async (req, res) => {
   }
 });
 
+
 /* -------------------- ALLOCATIONS -------------------- */
 
 // ✅ Save Allocations with expiry date (3 days after examDate)
-app.post("/api/save-allocations", async (req, res) => {
+/* app.post("/api/save-allocations", async (req, res) => {
   try {
     const allocationsWithExpiry = req.body.allocations.map((allocation) => ({
       ...allocation,
@@ -213,7 +228,56 @@ app.post("/api/save-allocations", async (req, res) => {
     console.error("Saving allocations error:", err);
     res.status(500).json({ message: "Failed to save allocations" });
   }
+}); */
+
+// ✅ Save Allocations with expiry date (3 days after examDate)
+// ✅ Save Allocations with expiry date (3 days after examDate)
+app.post("/api/save-allocations", async (req, res) => {
+  try {
+    let allocations = [];
+
+    // Case 1: frontend sends { ... } → single object (ClassExamAllocator)
+    if (!req.body.allocations) {
+      allocations = [req.body];
+    } else {
+      // Case 2: frontend sends { allocations: [...] } → multiple objects (RoomAllocator/LabAllocator)
+      allocations = req.body.allocations;
+    }
+
+    const allocationsWithExpiry = allocations.map((allocation) => {
+      // If ClassExamAllocator sends assignedStudents (array) → join as string
+      let rollNumbers = allocation.rollNumbers || "";
+      let rollStart = allocation.rollStart || null;
+      let rollEnd = allocation.rollEnd || null;
+
+      if (allocation.assignedStudents && allocation.assignedStudents.length > 0) {
+        rollNumbers = allocation.assignedStudents.join(","); // "23ADR101,23ADR102,23ADR103"
+        rollStart = allocation.assignedStudents[0];
+        rollEnd = allocation.assignedStudents[allocation.assignedStudents.length - 1];
+      }
+
+      return {
+        ...allocation,
+        examName: allocation.subjectWithCode || allocation.examName,
+        rollNumbers,
+        rollStart,
+        rollEnd,
+        totalStudents:
+          allocation.assignedStudents?.length || allocation.totalStudents || 0,
+        expiryDate: new Date(
+          new Date(allocation.examDate).getTime() + 3 * 24 * 60 * 60 * 1000
+        ),
+      };
+    });
+
+    await Allocation.insertMany(allocationsWithExpiry);
+    res.status(200).json({ message: "Allocations saved with expiry" });
+  } catch (err) {
+    console.error("Saving allocations error:", err);
+    res.status(500).json({ message: "Failed to save allocations" });
+  }
 });
+
 
 app.post("/api/save-lab-allocations", async (req, res) => {
   try {
@@ -331,6 +395,27 @@ app.put("/api/allocations/:id/update-invigilators", async (req, res) => {
     res.status(500).json({ message: "Failed to update invigilators" });
   }
 });
+// GET /api/students/:className/:year
+app.get("/api/students/:className/:year", async (req, res) => {
+  const { className, year } = req.params;
+
+  try {
+    const students = await Student.find({
+      className: className.trim().toUpperCase(),
+      year: year.trim(),
+    }).sort({ rollno: 1 });
+
+    if (!students || students.length === 0) {
+      return res.status(404).json({ message: "No students found" });
+    }
+
+    res.status(200).json(students);
+  } catch (err) {
+    console.error("❌ Fetch class students error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 /* -------------------- HEALTH CHECK -------------------- */
 
