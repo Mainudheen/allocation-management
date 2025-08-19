@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 function StudentLogin() {
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+  const closeDropdown = () => setDropdownOpen(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -53,6 +57,29 @@ function StudentLogin() {
   };
 
   return (
+
+    <>
+     {/* NAVBAR */}
+      <nav className="navbar" onClick={closeDropdown}>
+        <div className="navbar-left">
+          {/* <img src="https://kms.kongu.edu/images/kongu.jpg" alt="College Logo" className="college-logo" /> */}
+          <span className="college-name">AUTOMATED HALL SCHEDULER </span>
+        </div>
+        <div className="navbar-right">
+          <button className="nav-button" onClick={() => navigate('/')}>Home</button>
+
+          <div className="dropdown" onClick={(e) => e.stopPropagation()}>
+            <button className="nav-button" onClick={toggleDropdown}>Login ▾</button>
+            {dropdownOpen && (
+              <div className="dropdown-content">
+                <div onClick={() => { navigate('/student-login'); closeDropdown(); }}>Student Login</div>
+                <div onClick={() => { navigate('/admin-login'); closeDropdown(); }}>Admin Login</div>
+              </div>
+            )}
+          </div>
+        </div>
+        </nav>
+
     <div className="student-login-container">
       <form className="student-login-card" onSubmit={handleSubmit}>
         <h2>STUDENT LOGIN</h2>
@@ -113,6 +140,7 @@ function StudentLogin() {
         <button type="submit">Login</button>
       </form>
     </div>
+    </>
   );
 }
 

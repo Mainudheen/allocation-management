@@ -17,8 +17,8 @@ function HomePage() {
       {/* NAVBAR */}
       <nav className="navbar" onClick={closeDropdown}>
         <div className="navbar-left">
-          <img src="https://kms.kongu.edu/images/kongu.jpg" alt="College Logo" className="college-logo" />
-          <span className="college-name">KONGU ENGINEERING COLLEGE </span>
+          {/* <img src="https://kms.kongu.edu/images/kongu.jpg" alt="College Logo" className="college-logo" /> */}
+          <span className="college-name">AUTOMATED HALL SCHEDULER </span>
         </div>
 
         <div className="navbar-right">

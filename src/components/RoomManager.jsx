@@ -1,6 +1,7 @@
 // src/components/RoomsManager.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./StudentManager.css"; // ✅ Import your CSS file
 
 const ROOM_API_URL = "http://localhost:5000/api/rooms";
 
@@ -99,26 +100,19 @@ export default function RoomsManager({ onBack }) {
   };
 
   return (
-    <div className="mt-6">
-
+    <div className="manage-rooms-container">
       {/* ---------------- Edit Room ---------------- */}
       {step === "editRoom" && (
-        <div className="bg-white p-6 rounded-2xl shadow-lg mt-6">
-          <h2 className="text-xl font-bold mb-4 text-blue-600">Edit Room</h2>
+        <div className="form-card bg-white">
+          <h2>Edit Room</h2>
           <input
             type="text"
             name="roomNo"
             placeholder="Room No"
             value={form.roomNo}
             onChange={handleChange}
-            className="border p-2 w-full mb-2"
           />
-          <select
-            name="floor"
-            value={form.floor}
-            onChange={handleChange}
-            className="border p-2 w-full mb-2"
-          >
+          <select name="floor" value={form.floor} onChange={handleChange}>
             <option value="">Select Floor</option>
             <option value="Ground">Ground</option>
             <option value="First">First</option>
@@ -131,19 +125,12 @@ export default function RoomsManager({ onBack }) {
             placeholder="No. of Benches"
             value={form.benches}
             onChange={handleChange}
-            className="border p-2 w-full mb-2"
           />
-          <div className="flex gap-4">
-            <button
-              onClick={handleUpdateRoom}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
+          <div className="btn-group">
+            <button onClick={handleUpdateRoom} className="btn bg-blue-500">
               Update Room
             </button>
-            <button
-              onClick={() => setStep("rooms")}
-              className="bg-gray-500 text-white px-4 py-2 rounded"
-            >
+            <button onClick={() => setStep("rooms")} className="btn bg-gray-500">
               ⬅ Cancel
             </button>
           </div>
@@ -153,25 +140,19 @@ export default function RoomsManager({ onBack }) {
       {/* ---------------- Rooms List & Add Room ---------------- */}
       {step === "rooms" && (
         <div>
-          <h2 className="text-2xl font-bold mb-6 text-purple-700">🏫 All Rooms</h2>
+          <h1 className="page-title">🏫 Manage Rooms</h1>
 
-          {/* Add New Room */}
-          <div className="bg-white p-6 rounded-2xl shadow-md mb-6">
-            <h3 className="text-xl font-semibold mb-4 text-green-700">➕ Add New Room</h3>
+          {/* Add New Room Form */}
+          <div className="form-card bg-white">
+            <h2>➕ Add New Room</h2>
             <input
               type="text"
               name="roomNo"
               placeholder="Room No"
               value={newRoom.roomNo}
               onChange={handleNewRoomChange}
-              className="border p-2 w-full mb-2"
             />
-            <select
-              name="floor"
-              value={newRoom.floor}
-              onChange={handleNewRoomChange}
-              className="border p-2 w-full mb-2"
-            >
+            <select name="floor" value={newRoom.floor} onChange={handleNewRoomChange}>
               <option value="">Select Floor</option>
               <option value="Ground">Ground</option>
               <option value="First">First</option>
@@ -184,37 +165,30 @@ export default function RoomsManager({ onBack }) {
               placeholder="No. of Benches"
               value={newRoom.benches}
               onChange={handleNewRoomChange}
-              className="border p-2 w-full mb-2"
             />
-            <button
-              onClick={handleAddRoom}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-            >
+            <button onClick={handleAddRoom} className="btn bg-green-500">
               Add Room
             </button>
           </div>
 
-          {/* Rooms List */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Rooms Grid */}
+          <div className="rooms-grid">
             {rooms.length > 0 ? (
               rooms.map((room) => (
-                <div
-                  key={room._id}
-                  className="bg-gradient-to-br from-purple-100 to-white p-6 rounded-2xl shadow-md hover:shadow-xl transition"
-                >
-                  <h3 className="text-xl font-semibold text-purple-800 mb-2">{room.roomNo}</h3>
-                  <p className="text-gray-700"><strong>Floor:</strong> {room.floor}</p>
-                  <p className="text-gray-700"><strong>Benches:</strong> {room.benches}</p>
-                  <div className="flex gap-3 mt-4">
+                <div key={room._id} className="room-card">
+                  <h2>Room {room.roomNo}</h2>
+                  <p><strong>Floor:</strong> {room.floor}</p>
+                  <p><strong>Benches:</strong> {room.benches}</p>
+                  <div className="btn-group">
                     <button
                       onClick={() => handleEditRoom(room)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition"
+                      className="btn bg-blue-500"
                     >
                       ✏ Edit
                     </button>
                     <button
                       onClick={() => handleDeleteRoom(room._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition"
+                      className="btn bg-red-500"
                     >
                       🗑 Delete
                     </button>
@@ -226,10 +200,7 @@ export default function RoomsManager({ onBack }) {
             )}
           </div>
 
-          <button
-            onClick={onBack}
-            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded mt-6 transition"
-          >
+          <button onClick={onBack} className="btn bg-gray-500 mt-6">
             ⬅ Back
           </button>
         </div>

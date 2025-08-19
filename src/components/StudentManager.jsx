@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import RoomsManager from "./RoomManager";
 import axios from "axios";
-import './CatOptionsPage';
+import "./StudentManager.css";
 
 const API_URL = "http://localhost:5000/api/students";
 
 export default function StudentManager() {
-  const [step, setStep] = useState("main"); // main | add | delete | singleAdd | bulkAdd | singleDelete | bulkDelete | rooms
+  const [step, setStep] = useState("main");
   const [form, setForm] = useState({
     name: "",
     rollno: "",
@@ -17,31 +17,29 @@ export default function StudentManager() {
   });
   const [file, setFile] = useState(null);
 
-  // Handle input
+  // Handle form field changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Single student add
+  // Add single student
   const handleAddStudent = async () => {
     try {
       await axios.post(`${API_URL}/add`, form);
-      alert("Student added successfully ✅");
+      alert("✅ Student added successfully");
       setForm({ name: "", rollno: "", className: "", year: "", dob: "", search: "" });
       setStep("main");
     } catch (err) {
-      alert("Failed to add student ❌");
+      alert("❌ Failed to add student");
       console.error(err);
     }
   };
 
-  // Bulk upload
+  // Bulk upload students
   const handleUpload = async () => {
     try {
-      if (!file) {
-        alert("Please select a file");
-        return;
-      }
+      if (!file) return alert("Please select a file");
+
       const formData = new FormData();
       formData.append("file", file);
 
@@ -49,50 +47,44 @@ export default function StudentManager() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Students uploaded successfully ✅");
+      alert("✅ Students uploaded successfully");
       setFile(null);
       setStep("main");
     } catch (err) {
-      alert("Upload failed ❌");
+      alert("❌ Upload failed");
       console.error(err);
     }
   };
 
-  // Single delete
+  // Delete single student
   const handleDeleteStudent = async () => {
     try {
-      if (!form.search) {
-        alert("Please enter a roll number");
-        return;
-      }
+      if (!form.search) return alert("Please enter a roll number");
       await axios.delete(`${API_URL}/delete/${form.search.toUpperCase()}`);
-      alert("Student deleted successfully ✅");
+      alert("✅ Student deleted successfully");
       setForm({ ...form, search: "", name: "", rollno: "", className: "", year: "" });
       setStep("main");
     } catch (err) {
-      alert("Failed to delete student ❌");
+      alert("❌ Failed to delete student");
       console.error(err);
     }
   };
 
-  // Bulk delete (by year)
+  // Bulk delete by year
   const handleBulkDelete = async () => {
     try {
-      if (!form.search) {
-        alert("Please enter year");
-        return;
-      }
+      if (!form.search) return alert("Please enter year");
       await axios.delete(`${API_URL}/delete-by-year/${form.search}`);
-      alert(`Students from year ${form.search} deleted successfully ✅`);
+      alert(`✅ Students from year ${form.search} deleted successfully`);
       setForm({ ...form, search: "" });
       setStep("main");
     } catch (err) {
-      alert("Bulk delete failed ❌");
+      alert("❌ Bulk delete failed");
       console.error(err);
     }
   };
 
-  // ------------------ Auto Fetch Student on Roll No ------------------
+  // Auto-fetch student details when typing rollno
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (!form.search) {
@@ -112,11 +104,10 @@ export default function StudentManager() {
         } else {
           setForm((prev) => ({ ...prev, name: "", rollno: "", className: "", year: "" }));
         }
-      } catch (err) {
+      } catch {
         setForm((prev) => ({ ...prev, name: "", rollno: "", className: "", year: "" }));
-        console.error(err);
       }
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(delayDebounceFn);
   }, [form.search]);
@@ -124,162 +115,118 @@ export default function StudentManager() {
   return (
     <div className="cat-options-container">
       <div className="cat-options-buttons">
-
-        {/* Main Options */}
+        {/* ===== Main Menu ===== */}
         {step === "main" && (
-          <div className="grid grid-cols-2 gap-6">
-            <div
-              onClick={() => setStep("add")}
-              className="cursor-pointer bg-white p-6 rounded-2xl shadow-lg text-center hover:bg-blue-100"
-            >
-              <h2 className="cat-option-card">➕ Add Student</h2>
+          <>
+            <div onClick={() => setStep("add")} className="cat-option-card option-blue">
+              ➕ Add Student
             </div>
-            <div
-              onClick={() => setStep("delete")}
-              className="cursor-pointer bg-white p-6 rounded-2xl shadow-lg text-center hover:bg-red-100"
-            >
-              <h2 className="cat-option-card">🗑️ Delete Student</h2>
+            <div onClick={() => setStep("delete")} className="cat-option-card option-red">
+              🗑️ Delete Student
             </div>
-            <div
-              onClick={() => setStep("rooms")}
-              className="cursor-pointer bg-white p-6 rounded-2xl shadow-lg text-center hover:bg-gray-200"
-            >
-              <h2 className="cat-option-card">🏫 Manage Rooms</h2>
+            <div onClick={() => setStep("rooms")} className="cat-option-card option-gray">
+              🏫 Manage Rooms
             </div>
-          </div>
+          </>
         )}
 
-        {/* Add Options */}
+        {/* ===== Add Menu ===== */}
         {step === "add" && (
-          <div className="grid grid-cols-2 gap-6">
-            <div
-              onClick={() => setStep("singleAdd")}
-              className="cursor-pointer bg-white p-6 rounded-2xl shadow-lg text-center hover:bg-green-100"
-            >
-              <h2 className="cat-option-card">Add Single Student</h2>
+          <>
+            <div onClick={() => setStep("singleAdd")} className="cat-option-card option-green">
+              ➕ Add Single Student
             </div>
-            <div
-              onClick={() => setStep("bulkAdd")}
-              className="cursor-pointer bg-white p-6 rounded-2xl shadow-lg text-center hover:bg-purple-100"
-            >
-              <h2 className="cat-option-card">Add Multiple (Excel)</h2>
+            <div onClick={() => setStep("bulkAdd")} className="cat-option-card option-purple">
+              📂 Add Multiple (Excel)
             </div>
-            <button
-              onClick={() => setStep("main")}
-              className="col-span-2 mt-4 bg-gray-500 text-white px-4 py-2 rounded"
-            >
-              ⬅ Back
-            </button>
-          </div>
+            <button onClick={() => setStep("main")} className="btn bg-gray-500">⬅ Back</button>
+          </>
         )}
 
-        {/* Delete Options */}
+        {/* ===== Delete Menu ===== */}
         {step === "delete" && (
-          <div className="grid grid-cols-2 gap-6">
-            <div
-              onClick={() => setStep("singleDelete")}
-              className="cursor-pointer bg-white p-6 rounded-2xl shadow-lg text-center hover:bg-yellow-100"
-            >
-              <h2 className="cat-option-card">Delete Single</h2>
+          <>
+            <div onClick={() => setStep("singleDelete")} className="cat-option-card option-pink">
+              🗑️ Delete Single
             </div>
-            <div
-              onClick={() => setStep("bulkDelete")}
-              className="cursor-pointer bg-white p-6 rounded-2xl shadow-lg text-center hover:bg-pink-100"
-            >
-              <h2 className="cat-option-card">Delete by Year</h2>
+            <div onClick={() => setStep("bulkDelete")} className="cat-option-card option-purple">
+              🗑️ Delete by Year
             </div>
-            <button
-              onClick={() => setStep("main")}
-              className="col-span-2 mt-4 bg-gray-500 text-white px-4 py-2 rounded"
-            >
-              ⬅ Back
-            </button>
-          </div>
+            <button onClick={() => setStep("main")} className="btn bg-gray-500">⬅ Back</button>
+          </>
         )}
 
-        {/* Single Add */}
+        {/* ===== Single Add ===== */}
         {step === "singleAdd" && (
-          <div className="bg-white p-6 rounded-2xl shadow-lg mt-6">
-            <h2 className="text-xl font-bold mb-4 text-blue-600">Add Single Student</h2>
-            <input type="text" name="name" placeholder="Name" value={form.name} onChange={handleChange} className="border p-2 w-full mb-2"/>
-            <input type="text" name="rollno" placeholder="Roll No" value={form.rollno} onChange={handleChange} className="border p-2 w-full mb-2"/>
-            <input type="text" name="className" placeholder="Class" value={form.className} onChange={handleChange} className="border p-2 w-full mb-2"/>
-            <label className="block text-gray-700">Year of Study:</label>
-            <select name="year" value={form.year} onChange={handleChange} className="border p-2 w-full mb-2">
+          <div className="form-card bg-white">
+            <h2>Add Single Student</h2>
+            <input type="text" name="name" placeholder="Name" value={form.name} onChange={handleChange} />
+            <input type="text" name="rollno" placeholder="Roll No" value={form.rollno} onChange={handleChange} />
+            <input type="text" name="className" placeholder="Class" value={form.className} onChange={handleChange} />
+            <select name="year" value={form.year} onChange={handleChange}>
               <option value="">Select Year</option>
               <option value="II">II</option>
               <option value="III">III</option>
               <option value="IV">IV</option>
             </select>
-            <input type="text" name="dob" placeholder="DOB (dd-mm-yyyy)" value={form.dob} onChange={handleChange} className="border p-2 w-full mb-2"/>
-            <div className="flex gap-4">
-              <button onClick={handleAddStudent} className="bg-blue-500 text-white px-4 py-2 rounded">Add Student</button>
-              <button onClick={() => setStep("main")} className="bg-gray-500 text-white px-4 py-2 rounded">⬅ Back</button>
+            <input type="text" name="dob" placeholder="DOB (dd-mm-yyyy)" value={form.dob} onChange={handleChange} />
+            <div className="btn-group">
+              <button onClick={handleAddStudent} className="btn bg-blue-500">Add Student</button>
+              <button onClick={() => setStep("main")} className="btn bg-gray-500">⬅ Back</button>
             </div>
           </div>
         )}
 
-        {/* Bulk Add */}
+        {/* ===== Bulk Add ===== */}
         {step === "bulkAdd" && (
-          <div className="bg-white p-6 rounded-2xl shadow-lg mt-6">
-            <h2 className="text-xl font-bold mb-4 text-purple-600">Bulk Upload Students (Excel)</h2>
-            <input type="file" onChange={(e) => setFile(e.target.files[0])} className="border p-2 w-full mb-2"/>
-            <div className="flex gap-4">
-              <button onClick={handleUpload} className="bg-purple-500 text-white px-4 py-2 rounded">Upload</button>
-              <button onClick={() => setStep("main")} className="bg-gray-500 text-white px-4 py-2 rounded">⬅ Back</button>
+          <div className="form-card bg-white">
+            <h2>Bulk Upload Students (Excel)</h2>
+            <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+            <div className="btn-group">
+              <button onClick={handleUpload} className="btn bg-purple-500">Upload</button>
+              <button onClick={() => setStep("main")} className="btn bg-gray-500">⬅ Back</button>
             </div>
           </div>
         )}
 
-        {/* Single Delete */}
+        {/* ===== Single Delete ===== */}
         {step === "singleDelete" && (
-          <div className="bg-white p-6 rounded-2xl shadow-lg mt-6">
-            <h2 className="text-xl font-bold mb-4 text-red-600">Delete Single Student</h2>
-            <input
-              type="text"
-              name="search"
-              placeholder="Roll No"
-              value={form.search}
-              onChange={handleChange}
-              className="border p-2 w-full mb-2"
-            />
-
-            {/* Show fetched student info */}
+          <div className="form-card bg-white">
+            <h2>Delete Single Student</h2>
+            <input type="text" name="search" placeholder="Roll No" value={form.search} onChange={handleChange} />
             {form.name && (
-              <div className="border p-4 mb-4 rounded bg-gray-100">
+              <div className="student-info-card">
                 <p><strong>Name:</strong> {form.name}</p>
                 <p><strong>Roll No:</strong> {form.rollno}</p>
                 <p><strong>Class:</strong> {form.className}</p>
                 <p><strong>Year:</strong> {form.year}</p>
               </div>
             )}
-
-            <div className="flex gap-4">
-              <button onClick={handleDeleteStudent} className="bg-red-500 text-white px-4 py-2 rounded">
-                Delete Student
-              </button>
-              <button onClick={() => setStep("main")} className="bg-gray-500 text-white px-4 py-2 rounded">
-                ⬅ Back
-              </button>
+            <div className="btn-group">
+              <button onClick={handleDeleteStudent} className="btn bg-red-500">Delete Student</button>
+              <button onClick={() => setStep("main")} className="btn bg-gray-500">⬅ Back</button>
             </div>
           </div>
         )}
 
-        {/* Bulk Delete */}
+        {/* ===== Bulk Delete ===== */}
         {step === "bulkDelete" && (
-          <div className="bg-white p-6 rounded-2xl shadow-lg mt-6">
-            <h2 className="text-xl font-bold mb-4 text-pink-600">Bulk Delete Students by Year</h2>
-            <input type="text" name="search" placeholder="Enter Year" value={form.search} onChange={handleChange} className="border p-2 w-full mb-2"/>
-            <div className="flex gap-4">
-              <button onClick={handleBulkDelete} className="bg-pink-500 text-white px-4 py-2 rounded">Delete by Year</button>
-              <button onClick={() => setStep("main")} className="bg-gray-500 text-white px-4 py-2 rounded">⬅ Back</button>
+          <div className="form-card bg-white">
+            <h2>Bulk Delete Students by Year</h2>
+            <input type="text" name="search" placeholder="Enter Year (II / III / IV)" value={form.search} onChange={handleChange} />
+            <div className="btn-group">
+              <button onClick={handleBulkDelete} className="btn bg-pink-500">Delete by Year</button>
+              <button onClick={() => setStep("main")} className="btn bg-gray-500">⬅ Back</button>
             </div>
           </div>
         )}
 
-        {/* Rooms Manager */}
-        {step === "rooms" && <RoomsManager onBack={() => setStep("main")} />}
-
+        {/* ===== Rooms Manager (cards grid) ===== */}
+        {step === "rooms" && (
+          <div className="manage-rooms-container">
+            <RoomsManager onBack={() => setStep("main")} />
+          </div>
+        )}
       </div>
     </div>
   );
