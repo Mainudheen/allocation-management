@@ -287,6 +287,18 @@ app.get("/api/allocations", async (req, res) => {
   }
 });
 
+// GET /api/students/get/:rollno
+app.get("/api/students/get/:rollno", async (req, res) => {
+  try {
+    const student = await Student.findOne({ rollno: req.params.rollno });
+    if (!student) return res.status(404).send(null);
+    res.send(student);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+
 app.put("/api/allocation/:id", async (req, res) => {
   try {
     const updated = await Allocation.findByIdAndUpdate(

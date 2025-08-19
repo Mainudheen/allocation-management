@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RoomsManager from "./RoomManager";
 import axios from "axios";
 import './CatOptionsPage';
@@ -62,12 +62,12 @@ export default function StudentManager() {
   const handleDeleteStudent = async () => {
     try {
       if (!form.search) {
-        alert("Please enter roll number");
+        alert("Please enter a roll number");
         return;
       }
-      await axios.delete(`${API_URL}/delete/${form.search}`);
+      await axios.delete(`${API_URL}/delete/${form.search.toUpperCase()}`);
       alert("Student deleted successfully ✅");
-      setForm({ ...form, search: "" });
+      setForm({ ...form, search: "", name: "", rollno: "", className: "", year: "" });
       setStep("main");
     } catch (err) {
       alert("Failed to delete student ❌");
@@ -91,6 +91,35 @@ export default function StudentManager() {
       console.error(err);
     }
   };
+
+  // ------------------ Auto Fetch Student on Roll No ------------------
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (!form.search) {
+        setForm((prev) => ({ ...prev, name: "", rollno: "", className: "", year: "" }));
+        return;
+      }
+      try {
+        const res = await axios.get(`${API_URL}/get/${form.search.toUpperCase()}`);
+        if (res.data) {
+          setForm((prev) => ({
+            ...prev,
+            name: res.data.name,
+            rollno: res.data.rollno,
+            className: res.data.className,
+            year: res.data.year,
+          }));
+        } else {
+          setForm((prev) => ({ ...prev, name: "", rollno: "", className: "", year: "" }));
+        }
+      } catch (err) {
+        setForm((prev) => ({ ...prev, name: "", rollno: "", className: "", year: "" }));
+        console.error(err);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [form.search]);
 
   return (
     <div className="cat-options-container">
@@ -206,10 +235,32 @@ export default function StudentManager() {
         {step === "singleDelete" && (
           <div className="bg-white p-6 rounded-2xl shadow-lg mt-6">
             <h2 className="text-xl font-bold mb-4 text-red-600">Delete Single Student</h2>
-            <input type="text" name="search" placeholder="Roll No" value={form.search} onChange={handleChange} className="border p-2 w-full mb-2"/>
+            <input
+              type="text"
+              name="search"
+              placeholder="Roll No"
+              value={form.search}
+              onChange={handleChange}
+              className="border p-2 w-full mb-2"
+            />
+
+            {/* Show fetched student info */}
+            {form.name && (
+              <div className="border p-4 mb-4 rounded bg-gray-100">
+                <p><strong>Name:</strong> {form.name}</p>
+                <p><strong>Roll No:</strong> {form.rollno}</p>
+                <p><strong>Class:</strong> {form.className}</p>
+                <p><strong>Year:</strong> {form.year}</p>
+              </div>
+            )}
+
             <div className="flex gap-4">
-              <button onClick={handleDeleteStudent} className="bg-red-500 text-white px-4 py-2 rounded">Delete Student</button>
-              <button onClick={() => setStep("main")} className="bg-gray-500 text-white px-4 py-2 rounded">⬅ Back</button>
+              <button onClick={handleDeleteStudent} className="bg-red-500 text-white px-4 py-2 rounded">
+                Delete Student
+              </button>
+              <button onClick={() => setStep("main")} className="bg-gray-500 text-white px-4 py-2 rounded">
+                ⬅ Back
+              </button>
             </div>
           </div>
         )}
