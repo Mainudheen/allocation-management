@@ -1,248 +1,106 @@
-/* ===== Student Manager Container ===== */
-.cat-options-container {
-  padding: 40px 20px;
-  background: linear-gradient(135deg, #f0f4ff, #dfe9f3);
+/* Page Centering */
+.page-container {
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  display: flex;
-  justify-content: center;   /* Center horizontally */
-  align-items: center;       /* Center vertically */
-  flex-direction: column;    /* Stack content vertically */
-  align-items: center;
-}
-
-/* ===== Options Wrapper (Dashboard Cards Grid) ===== */
-.cat-options-buttons {
-  width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-  gap: 25px;
-  justify-items: center;   /* Center items inside each column */
-  animation: slideUpFadeIn 0.8s ease forwards;
-}
-
-/* ===== Option Cards (Main Menu Items) ===== */
-.cat-option-card {
-  height: 160px;
-  width: 90%; /* Keeps cards same width inside columns */
-  max-width: 300px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.centered-wrapper {
   text-align: center;
-  border-radius: 15px;
-  transition: all 0.4s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.cat-option-card:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
-}
-
-/* ===== Gradient Background Variants ===== */
-.option-blue,
-.option-green,
-.option-purple,
-.option-red,
-.option-pink,
-.option-gray {
-  background: linear-gradient(145deg, #1a2a6c, #0d1b54);
-}
-
-/* ===== Individual Hover Colors ===== */
-.option-blue:hover   { background: linear-gradient(90deg, #3399ff, #004085); }
-.option-green:hover  { background: linear-gradient(90deg, #007bff, #0056b3); }
-.option-purple:hover { background: linear-gradient(90deg, #8b5cf6, #3b0764); }
-.option-red:hover    { background: linear-gradient(90deg, #f87171, #7f1d1d); }
-.option-pink:hover   { background: linear-gradient(90deg, #f472b6, #831843); }
-.option-gray:hover   { background: linear-gradient(90deg, #9ca3af, #1f2937); }
-
-/* ===== Form Section (Add/Delete Forms) ===== */
-.bg-white {
-  background: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-  padding: 30px 25px;
-  animation: fadeIn 0.6s ease;
-  margin: 20px auto;
+  width: 100%;
   max-width: 600px;
 }
 
-/* ===== Headings ===== */
-.bg-white h2 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #0d1b54;
-  text-align: center;
-}
-
-/* ===== Inputs & Selects ===== */
-input[type="text"],
-input[type="file"],
-select {
-  width: 100%;
-  padding: 14px 16px;
-  font-size: 1rem;
-  background-color: #fafafa;
-  border: 1px solid #cfd8dc;
-  border-radius: 10px;
-  margin-bottom: 12px;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
-input:focus,
-select:focus {
-  border-color: #4a90e2;
-  background-color: #fff;
-  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
-  outline: none;
-}
-
-/* ===== Student Info Card (for delete preview) ===== */
-.student-info-card {
-  background: #f8faff;
-  border: 1px solid #e3ebf7;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  font-size: 0.95rem;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+/* Grid for main menu */
+.card-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   align-items: center;
+}
+
+/* Option cards */
+.cat-option-card {
+  padding: 15px 25px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  color: white;
+}
+
+.cat-option-card:hover {
+  transform: translateY(-3px);
+}
+
+.option-blue { background: #3b82f6; }
+.option-red { background: #ef4444; }
+.option-gray { background: #6b7280; }
+.option-green { background: #10b981; }
+.option-purple { background: #8b5cf6; }
+.option-pink { background: #ec4899; }
+
+/* Form Cards */
+.form-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.form-card input,
+.form-card select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
   justify-content: center;
 }
 
-.student-info-card p {
-  margin: 6px 0;
-  font-weight: 500;
-  color: #333;
-}
-
-/* ===== Buttons ===== */
-button {
-  flex: 1;
-  padding: 14px;
-  font-size: 1rem;
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
   font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #fff;
+  color: white;
+  transition: opacity 0.2s ease;
 }
 
-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-}
+.btn:hover { opacity: 0.9; }
+.btn-primary { background: #2563eb; }
+.btn-secondary { background: #6b7280; }
 
-.bg-blue-500   { background: linear-gradient(90deg, #007bff, #0056b3); }
-.bg-green-500  { background: linear-gradient(90deg, #16a34a, #0f6d2c); }
-.bg-purple-500 { background: linear-gradient(90deg, #7c3aed, #5b21b6); }
-.bg-red-500    { background: linear-gradient(90deg, #dc2626, #991b1b); }
-.bg-pink-500   { background: linear-gradient(90deg, #ec4899, #be185d); }
-.bg-gray-500   { background: linear-gradient(90deg, #6b7280, #374151); }
-
-/* ===== Room Management (Cards in Grid) ===== */
-.manage-rooms-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-
-.page-title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #0d1b54;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-/* Grid for rooms */
-.rooms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  justify-content: center;  /* Centers grid items */
+/* Student info card */
+.student-info-card {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
   width: 100%;
-  max-width: 1000px;
-  margin-top: 20px;
+  max-width: 280px;
+  text-align: left;
+  font-size: 0.95rem;
 }
 
-/* Each Room Card */
-.room-card {
-  background: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-  padding: 25px;
-  text-align: center;
-  transition: transform 0.2s ease, background 0.3s ease;
-  cursor: pointer;
-  max-width: 300px;
-  margin: auto;
-}
-
-.room-card h2 {
-  font-size: 1.4rem;
-  color: #0d1b54;
-  margin-bottom: 12px;
-}
-
-.room-card p {
-  font-size: 1rem;
-  color: #444;
-  margin: 5px 0;
-}
-
-.room-card:hover {
-  transform: translateY(-6px);
-  background: #f0f7ff;
-}
-
-/* ===== Animations ===== */
-@keyframes slideUpFadeIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-/* ===== Responsive Fixes ===== */
-@media (max-width: 992px) {
-  .cat-options-buttons {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .cat-options-buttons {
-    grid-template-columns: 1fr;
-  }
-
-  .cat-option-card {
-    height: 120px;
-    font-size: 18px;
-  }
-
-  button {
-    width: 100%;
-    font-size: 0.95rem;
-  }
-
-  .room-card {
-    width: 100%;
-  }
+/* OLD Style kept for RoomsManager */
+.rooms-old-style {
+  margin-top: 30px;
+  text-align: left;
 }

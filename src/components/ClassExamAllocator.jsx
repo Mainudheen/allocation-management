@@ -51,7 +51,7 @@ export default function ClassExamAllocator() {
       !selectedClass ||
       selectedRolls.length === 0
     ) {
-      alert("⚠️ Please fill all fields and select students");
+      alert("⚠ Please fill all fields and select students");
       return;
     }
 
@@ -86,80 +86,94 @@ export default function ClassExamAllocator() {
       <h2>🎯 Class Exam Allocator</h2>
 
       <div className="form-section">
-        <label>CAT:</label>
-        <div className="radio-group">
-          {[1, 2, 3].map((n) => (
-            <label key={n}>
-              <input
-                type="radio"
-                value={n}
-                checked={cat === `${n}`}
-                onChange={(e) => setCat(e.target.value)}
-              />{" "}
-              {n}
-            </label>
-          ))}
+        <div>
+          <label>CAT:</label>
+          <div className="radio-group">
+            {[1, 2, 3].map((n) => (
+              <label key={n}>
+                <input
+                  type="radio"
+                  value={n}
+                  checked={cat === String(n)}
+                  onChange={(e) => setCat(e.target.value)}
+                />
+                {n}
+              </label>
+            ))}
+          </div>
         </div>
 
-        <label>Session:</label>
-        <div className="radio-group">
-          {["FN", "AN"].map((s) => (
-            <label key={s}>
-              <input
-                type="radio"
-                value={s}
-                checked={session === s}
-                onChange={(e) => setSession(e.target.value)}
-              />{" "}
-              {s}
-            </label>
-          ))}
+        <div>
+          <label>Session:</label>
+          <div className="radio-group">
+            {["FN", "AN"].map((s) => (
+              <label key={s}>
+                <input
+                  type="radio"
+                  value={s}
+                  checked={session === s}
+                  onChange={(e) => setSession(e.target.value)}
+                />
+                {s}
+              </label>
+            ))}
+          </div>
         </div>
 
-        <label>Date:</label>
-        <input
-          type="date"
-          value={examDate}
-          onChange={(e) => setExamDate(e.target.value)}
-        />
+        <div>
+          <label>Date:</label>
+          <input
+            type="date"
+            value={examDate}
+            onChange={(e) => setExamDate(e.target.value)}
+          />
+        </div>
 
-        <label>Time:</label>
-        <input
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-        />
+        <div>
+          <label>Time:</label>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+          />
+        </div>
 
-        <label>Subject with Code:</label>
-        <input
-          type="text"
-          value={subjectWithCode}
-          onChange={(e) => setSubjectWithCode(e.target.value)}
-        />
+        <div>
+          <label>Subject with Code:</label>
+          <input
+            type="text"
+            value={subjectWithCode}
+            onChange={(e) => setSubjectWithCode(e.target.value)}
+          />
+        </div>
 
-        <label>Year of Study:</label>
-        <select value={year} onChange={(e) => setYear(e.target.value)}>
-          <option value="">Select Year</option>
-          <option value="II">II</option>
-          <option value="III">III</option>
-          <option value="IV">IV</option>
-        </select>
+        <div>
+          <label>Year of Study:</label>
+          <select value={year} onChange={(e) => setYear(e.target.value)}>
+            <option value="">Select Year</option>
+            <option value="II">II</option>
+            <option value="III">III</option>
+            <option value="IV">IV</option>
+          </select>
+        </div>
 
-        <label>Select Class:</label>
-        <select
-          value={selectedClass}
-          onChange={(e) => setSelectedClass(e.target.value)}
-        >
-          <option value="">Choose Class</option>
-          <option value="AIDS-A">AIDS-A</option>
-          <option value="AIDS-B">AIDS-B</option>
-          <option value="AIDS-C">AIDS-C</option>
-          <option value="AIML-A">AIML-A</option>
-          <option value="AIML-B">AIML-B</option>
-        </select>
+        <div>
+          <label>Select Class:</label>
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+          >
+            <option value="">Choose Class</option>
+            <option value="AIDS-A">AIDS-A</option>
+            <option value="AIDS-B">AIDS-B</option>
+            <option value="AIDS-C">AIDS-C</option>
+            <option value="AIML-A">AIML-A</option>
+            <option value="AIML-B">AIML-B</option>
+          </select>
+        </div>
       </div>
 
-      {/* Student roll numbers flex view */}
+      {/* Student roll numbers grid view */}
       {students.length > 0 && (
         <div className="students-grid">
           {students.map((stu) => (
@@ -177,7 +191,7 @@ export default function ClassExamAllocator() {
       )}
 
       <button className="allocate-btn" onClick={handleAllocate}>
-        🚀 Allocate Exam
+        Allocate Exam
       </button>
     </div>
   );

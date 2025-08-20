@@ -1,7 +1,7 @@
-// src/components/RoomsManager.js
+// src/components/RoomsManager.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./StudentManager.css"; // ✅ Import your CSS file
+import "./RoomManager.css"; // ✅ Separate CSS file
 
 const ROOM_API_URL = "http://localhost:5000/api/rooms";
 
@@ -100,10 +100,10 @@ export default function RoomsManager({ onBack }) {
   };
 
   return (
-    <div className="manage-rooms-container">
+    <div className="rooms-container">
       {/* ---------------- Edit Room ---------------- */}
       {step === "editRoom" && (
-        <div className="form-card bg-white">
+        <div className="form-card">
           <h2>Edit Room</h2>
           <input
             type="text"
@@ -127,10 +127,10 @@ export default function RoomsManager({ onBack }) {
             onChange={handleChange}
           />
           <div className="btn-group">
-            <button onClick={handleUpdateRoom} className="btn bg-blue-500">
+            <button onClick={handleUpdateRoom} className="btn btn-blue">
               Update Room
             </button>
-            <button onClick={() => setStep("rooms")} className="btn bg-gray-500">
+            <button onClick={() => setStep("rooms")} className="btn btn-gray">
               ⬅ Cancel
             </button>
           </div>
@@ -143,7 +143,7 @@ export default function RoomsManager({ onBack }) {
           <h1 className="page-title">🏫 Manage Rooms</h1>
 
           {/* Add New Room Form */}
-          <div className="form-card bg-white">
+          <div className="form-card">
             <h2>➕ Add New Room</h2>
             <input
               type="text"
@@ -166,7 +166,7 @@ export default function RoomsManager({ onBack }) {
               value={newRoom.benches}
               onChange={handleNewRoomChange}
             />
-            <button onClick={handleAddRoom} className="btn bg-green-500">
+            <button onClick={handleAddRoom} className="btn btn-green">
               Add Room
             </button>
           </div>
@@ -182,13 +182,13 @@ export default function RoomsManager({ onBack }) {
                   <div className="btn-group">
                     <button
                       onClick={() => handleEditRoom(room)}
-                      className="btn bg-blue-500"
+                      className="btn btn-blue"
                     >
                       ✏ Edit
                     </button>
                     <button
                       onClick={() => handleDeleteRoom(room._id)}
-                      className="btn bg-red-500"
+                      className="btn btn-red"
                     >
                       🗑 Delete
                     </button>
@@ -200,7 +200,7 @@ export default function RoomsManager({ onBack }) {
             )}
           </div>
 
-          <button onClick={onBack} className="btn bg-gray-500 mt-6">
+          <button onClick={onBack} className="btn btn-gray back-btn">
             ⬅ Back
           </button>
         </div>

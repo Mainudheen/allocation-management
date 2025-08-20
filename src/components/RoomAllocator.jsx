@@ -372,10 +372,10 @@ function RoomAllocator() {
           <input type="text" value={roomsInput} onChange={e => setRoomsInput(e.target.value)} placeholder="Eg: 101,102,103" />
         </div> */}
 
-        <div>
+        {/* <div>
           <label>Hall No:</label>
           <input type="text" value={hallNo} onChange={e => setHallNo(e.target.value)} />
-        </div>
+        </div> */}
 
 
 
