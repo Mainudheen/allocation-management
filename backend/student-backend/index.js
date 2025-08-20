@@ -264,6 +264,7 @@ app.post("/api/save-allocations", async (req, res) => {
         rollEnd,
         totalStudents:
           allocation.assignedStudents?.length || allocation.totalStudents || 0,
+          time: allocation.time,
         expiryDate: new Date(
           new Date(allocation.examDate).getTime() + 3 * 24 * 60 * 60 * 1000
         ),

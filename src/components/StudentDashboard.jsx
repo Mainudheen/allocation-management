@@ -134,79 +134,87 @@ function StudentDashboard() {
         </div>
       </nav>
 
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <h1>
-          Welcome, <span>{studentName}</span> 🎓
-        </h1>
-        <p>Here’s your upcoming exam schedule. All the best! 📚</p>
-      </header>
+      <div className="dashboard-container">
+        <header className="dashboard-header">
+          <h1>
+            Welcome, <span>{studentName}</span> 🎓
+          </h1>
+          <p>Here’s your upcoming exam schedule. All the best! 📚</p>
+        </header>
 
-      {allocations.length > 0 ? (
-        <div className="cards-grid">
-          {allocations.map((allocation, index) => {
-            const examDateTime = new Date(
-              `${allocation.examDate}T${allocation.session === "FN" ? "09:00" : "14:00"}`
-            );
-            const now = new Date();
+        {allocations.length > 0 ? (
+          <div className="cards-grid">
+            {allocations.map((allocation, index) => {
+              const examDateTime = new Date(
+                `${allocation.examDate}T${allocation.session === "FN" ? "09:00" : "14:00"}`
+              );
+              const now = new Date();
 
-            let cardStatus = "";
-            if (examDateTime.toDateString() === now.toDateString()) {
-              cardStatus = examDateTime > now ? "present" : "past";
-            } else if (examDateTime > now) {
-              cardStatus = "upcoming";
-            } else {
-              cardStatus = "past";
-            }
+              let cardStatus = "";
+              if (examDateTime.toDateString() === now.toDateString()) {
+                cardStatus = examDateTime > now ? "present" : "past";
+              } else if (examDateTime > now) {
+                cardStatus = "upcoming";
+              } else {
+                cardStatus = "past";
+              }
 
-            const isLabExam = Boolean(allocation.lab);
-            const isClassExam = Boolean(allocation.className && !allocation.room && !allocation.lab);
-            const countdownKey = `${allocation.examDate}-${allocation.room || allocation.lab || allocation.className}`;
+              const isLabExam = Boolean(allocation.lab);
+              const isClassExam = Boolean(allocation.className && !allocation.room && !allocation.lab);
+              const countdownKey = `${allocation.examDate}-${allocation.room || allocation.lab || allocation.className}`;
 
-            const subjectName = allocation.subjectWithCode
-              ? allocation.subjectWithCode.split("-").slice(1).join("-").trim()
-              : allocation.subjectWithCode;
+              const subjectName = allocation.subjectWithCode
+                ? allocation.subjectWithCode.split("-").slice(1).join("-").trim()
+                : allocation.subjectWithCode;
 
-            return (
-              <div
-                className={`exam-card ${cardStatus} ${
-                  isLabExam ? "lab-exam" : isClassExam ? "class-exam" : ""
-                }`}
-                key={index}
-              >
-                {/* Subject name at the top */}
-                <h2 className="subject-title">{subjectName || "Exam"}</h2>
+              return (
+                <div
+                  className={`exam-card ${cardStatus} ${isLabExam ? "lab-exam" : isClassExam ? "class-exam" : ""
+                    }`}
+                  key={index}
+                >
+                  {/* Subject name at the top */}
+                  <h2 className="subject-title">{subjectName || "Exam"}</h2>
 
-                <p><strong>Exam:</strong> {allocation.subjectWithCode || "N/A"}</p>
-                <p><strong>CAT:</strong> {allocation.cat || "N/A"}</p>
-                <p><strong>Session:</strong> {allocation.session}</p>
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {new Date(allocation.examDate).toLocaleDateString("en-GB")} 🕒{" "}
-                  {allocation.examTime || allocation.time || "N/A"}
-                </p>
+                  <p><strong>Exam:</strong> {allocation.subjectWithCode || "N/A"}</p>
+                  <p><strong>CAT:</strong> {allocation.cat || "N/A"}</p>
+                  <p><strong>Session:</strong> {allocation.session}</p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {allocation.examDate
+                      ? new Date(allocation.examDate).toLocaleDateString("en-GB")
+                      : "N/A"}{" "}
+                    🕒{" "}
+                    {allocation.time
+                      ? allocation.time
+                      : allocation.session === "FN"
+                        ? "09:00"
+                        : allocation.session === "AN"
+                          ? "14:00"
+                          : "N/A"}
+                  </p>
 
-                {/* Show based on type */}
-                {isLabExam ? (
-                  <p><strong>Lab:</strong> {allocation.lab}</p>
-                ) : isClassExam ? (
-                  <p><strong>Class:</strong> {allocation.className}</p>
-                ) : (
-                  <p><strong>Room:</strong> {allocation.room}</p>
-                )}
+                  {/* Show based on type */}
+                  {isLabExam ? (
+                    <p><strong>Lab:</strong> {allocation.lab}</p>
+                  ) : isClassExam ? (
+                    <p><strong>Class:</strong> {allocation.className}</p>
+                  ) : (
+                    <p><strong>Room:</strong> {allocation.room}</p>
+                  )}
 
-                <p>
-                  <strong>⏳ Countdown:</strong>{" "}
-                  {formatCountdown(countdowns[countdownKey] || 0)}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className="error-text">❌ No exams scheduled. Please check back later.</p>
-      )}
-    </div>
+                  <p>
+                    <strong>⏳ Countdown:</strong>{" "}
+                    {formatCountdown(countdowns[countdownKey] || 0)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="error-text">❌ No exams scheduled. Please check back later.</p>
+        )}
+      </div>
     </>
   );
 }

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const allocationSchema = new mongoose.Schema({
   examName: String, // Maps to subjectWithCode
   examDate: String,
+  time: String,  
   cat: String,
   session: String,
   subjectWithCode: String,

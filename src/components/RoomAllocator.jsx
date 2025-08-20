@@ -101,7 +101,7 @@ function RoomAllocator() {
   const allocate = async () => {
     const semesterDisplay = semNo && (parseInt(semNo) % 2 === 1 ? `Odd Sem ${semNo}` : `Even Sem ${semNo}`);
 
-    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !year || !semNo || !selectedRooms.length || !hallNo || !time) {
+    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !year || !semNo || !selectedRooms.length || !time) {
       alert("Please complete all fields including time and upload roll numbers");
       return;
     }

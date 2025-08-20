@@ -166,3 +166,22 @@ select:focus {
 .allocate-btn::before {
   content: '🚀';
 }
+
+.select-deselect-buttons {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.select-deselect-buttons button {
+  padding: 5px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.select-deselect-buttons button:hover {
+  background-color: #0056b3;
+}
