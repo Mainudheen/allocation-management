@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import "./ClassExamAllocator.css";
+import "./button.css";
 
 export default function ClassExamAllocator() {
   const [cat, setCat] = useState("");
@@ -260,7 +261,7 @@ export default function ClassExamAllocator() {
         </div>
       )}
 
-      <button className="allocate-btn" onClick={handleAllocate}>
+      <button className="btn-donate" onClick={handleAllocate}>
         Allocate Exam
       </button>
 

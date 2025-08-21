@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import RoomsManager from "./RoomManager";
 import axios from "axios";
 import "./StudentManager.css";
+import "./card.css";
 
 const API_URL = "http://localhost:5000/api/students";
 

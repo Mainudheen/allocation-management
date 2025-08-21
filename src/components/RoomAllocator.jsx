@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import './RoomAllocator.css';
+import "./button.css";
 
 function RoomAllocator() {
   const { state } = useLocation();
@@ -328,7 +329,7 @@ function RoomAllocator() {
           <input type="date" value={examDate} onChange={e => setExamDate(e.target.value)} />
         </div>
 
-        <div>
+        <div >
           <label>Subject with Code:</label>
           <input type="text" value={subjectWithCode} onChange={e => setSubjectWithCode(e.target.value)} />
 
@@ -381,13 +382,13 @@ function RoomAllocator() {
 
 
         <button
-          className="allocate-all-button"
+          className="btn-donate"
           onClick={isEditMode ? handleUpdate : allocate}
         >
           {isEditMode ? 'Update Allocation' : 'Allocate'}
         </button>
 
-        <button onClick={downloadExcel}>📥 Download Excel</button>
+        <button className='btn-donate' onClick={downloadExcel}>📥 Download Excel</button>
       </div>
 
       {/* Display Cards */}

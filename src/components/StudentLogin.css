@@ -17,7 +17,7 @@
   justify-content: center;
   align-items: center;
   padding: 40px 20px;
-  min-height: 100vh;
+  min-height: 20vh;
   background: linear-gradient(135deg, #f0f4ff, #dfe9f3);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -25,7 +25,7 @@
 /* ========== Card Container ========== */
 .student-login-card {
   background: #ffffff;
-  padding: 40px 30px;
+  padding: 0px 30px;
   width: 100%;
   max-width: 420px;
   border-radius: 20px;
@@ -72,7 +72,8 @@
 
 /* ========== Submit Button ========== */
 .student-login-card button {
-  margin-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   width: 100%;
   padding: 14px;
   background: linear-gradient(90deg, #007bff, #0056b3);

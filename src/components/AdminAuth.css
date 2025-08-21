@@ -211,3 +211,9 @@
   height: 40px;
   width: 40px;
 }
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
