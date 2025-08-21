@@ -14,6 +14,7 @@ import RoomAllocator from './components/RoomAllocator';
 import StudentManager from './components/StudentManager';
 import RoomManager from './components/RoomManager';
 import ClassExamAllocator from './components/ClassExamAllocator';
+import SelectAllocation from './components/SelectAllocation';
 import './styles.css';
 
 function StudentDashboardWrapper() {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/StudentManage" element={<StudentManager />} />
         <Route path="/RoomManage" element={<RoomManager />} />
         <Route path="/class" element={<ClassExamAllocator />} />
+        <Route path="/select" element={<SelectAllocation />} />
        
       </Routes>
     </Router>

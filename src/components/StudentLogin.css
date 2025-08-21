@@ -9,7 +9,10 @@
     transform: translateY(0);
   }
 }
+body{
+  background: linear-gradient(135deg, #f0f4ff, #dfe9f3);
 
+}
 /* ========== Page Container ========== */
 .student-login-container {
   animation: slideUpFadeIn 0.8s ease forwards;

@@ -98,10 +98,16 @@
 /* ===== Card Grid for Homepage ===== */
 .card-grid {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;            /* <-- This allows cards to wrap to new lines if needed */
+  justify-content: center;    /* Center the cards */
   gap: 30px;
+  width: 100%;                /* Make sure it stretches fully */
+  max-width: 1100px;          /* Or a high enough value */
+  margin: 0 auto;
+  overflow-x: visible;        /* Make sure it doesn't hide overflow */
 }
+
 
 /* ===== Dashboard Card Styles ===== */
 .dashboard-card {
@@ -120,6 +126,8 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  flex: 0 0 auto;
+
 }
 
 .dashboard-card:hover {
@@ -294,10 +302,16 @@
     padding: 10px 8px;
   }
 
+  .card-grid {
+    flex-direction: row;         /* Ensure row! */
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 18px;
+  }
   .dashboard-card {
-    width: 90%;
-    height: auto;
-    padding: 20px 10px;
+    width: 220px;                 /* fixed card size */
+    min-width: 180px;
+    margin-bottom: 20px;
   }
     .navbar {
     flex-direction: column;

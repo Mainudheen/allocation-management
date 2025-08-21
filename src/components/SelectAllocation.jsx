@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CatOptionsPage.css';
 
-function CatOptionsPage() {
+function SelectAllocation() {
   const navigate = useNavigate();
 
   return (
@@ -28,13 +28,13 @@ function CatOptionsPage() {
 
       {/* MAIN CONTENT */}
       <div className="cat-options-container">
-        <h2>CAT Test Options</h2>
+        <h2>Test Options</h2>
         <div className="cat-options-buttons">
-          <div className="cat-option-card" onClick={() => navigate('/select')}>
-            <span>Allocate Hall</span>
+          <div className="cat-option-card" onClick={() => navigate('/dashboard')}>
+            <span>Auto Allocate</span>
           </div>
-          <div className="cat-option-card" onClick={() => navigate('/manage-allotments')}>
-            <span>Manage Allotments</span>
+          <div className="cat-option-card" onClick={() => navigate('/class')}>
+            <span>Manual Allocate</span>
           </div>
         </div>
       </div>
@@ -42,4 +42,4 @@ function CatOptionsPage() {
   );
 }
 
-export default CatOptionsPage;
+export default SelectAllocation;
