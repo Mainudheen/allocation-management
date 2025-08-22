@@ -1,7 +1,17 @@
 const mongoose = require("mongoose");
 
+
+const studentSchema = new mongoose.Schema({
+  name: String,
+  rollno: { type: String, required: true },
+  row: { type: Number },     // seating row
+  col: { type: Number },     // seating column
+  benchNo: { type: Number }  // optional if you also track bench numbering
+});
+
+
 const allocationSchema = new mongoose.Schema({
-  examName: String, // Maps to subjectWithCode
+  examName: String,          // Maps to subjectWithCode
   examDate: String,
   time: String,  
   cat: String,
@@ -11,21 +21,21 @@ const allocationSchema = new mongoose.Schema({
   semester: String,
   hallNo: String,
   room: String,
-  hallNo: String,
   totalStudents: Number,
-  rollNumbers: String, // Store as range string (e.g., "CS001–CS030")
-  cat: String,
-  session: String,
-  year: String,
-  semNo: String,
+  rollNumbers: String,       // Store as range string (e.g., "CS001–CS030")
   invigilators: [String],
-  rollStart: String,   // ← Starting roll number of range
-  rollEnd: String,     // ← Ending roll number of range
+  rollStart: String,         // Starting roll number of range
+  rollEnd: String,           // Ending roll number of range
+
+   students: [studentSchema],
+
+
   expiryDate: {
     type: Date,
     required: true,
-    index: { expires: 0 }
+    index: { expires: 0 }    // TTL index for auto-deletion
   }
 });
 
-module.exports = mongoose.model("Allocation", allocationSchema);
+// ✅ Prevent OverwriteModelError
+module.exports = mongoose.models.Allocation || mongoose.model("Allocation", allocationSchema);

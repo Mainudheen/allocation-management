@@ -8,16 +8,20 @@ const ROOM_API_URL = "http://localhost:5000/api/rooms";
 export default function RoomsManager({ onBack }) {
   const [rooms, setRooms] = useState([]);
   const [step, setStep] = useState("rooms"); // rooms | editRoom
+
   const [form, setForm] = useState({
     roomNo: "",
     floor: "",
     benches: "",
+    columns: "",
     _id: "",
   });
+
   const [newRoom, setNewRoom] = useState({
     roomNo: "",
     floor: "",
     benches: "",
+    columns: "",
   });
 
   // ✅ Fetch Rooms
@@ -45,7 +49,7 @@ export default function RoomsManager({ onBack }) {
 
   // ✅ Add Room
   const handleAddRoom = async () => {
-    if (!newRoom.roomNo || !newRoom.floor || !newRoom.benches) {
+    if (!newRoom.roomNo || !newRoom.floor || !newRoom.benches || !newRoom.columns) {
       alert("Please fill all fields");
       return;
     }
@@ -54,9 +58,10 @@ export default function RoomsManager({ onBack }) {
         roomNo: newRoom.roomNo,
         floor: newRoom.floor,
         benches: Number(newRoom.benches),
+        columns: Number(newRoom.columns),
       });
       alert("Room added successfully ✅");
-      setNewRoom({ roomNo: "", floor: "", benches: "" });
+      setNewRoom({ roomNo: "", floor: "", benches: "", columns: "" });
       fetchRooms();
     } catch (err) {
       alert("Failed to add room ❌");
@@ -66,17 +71,26 @@ export default function RoomsManager({ onBack }) {
 
   // ✅ Edit Room
   const handleEditRoom = (room) => {
-    setForm(room);
+    setForm({
+      ...room,
+      benches: room.benches || 0,
+      columns: room.columns || 0,
+    });
     setStep("editRoom");
   };
 
   // ✅ Update Room
   const handleUpdateRoom = async () => {
+    if (!form.roomNo || !form.floor || !form.benches || !form.columns) {
+      alert("Please fill all fields");
+      return;
+    }
     try {
       await axios.put(`${ROOM_API_URL}/${form._id}`, {
         roomNo: form.roomNo,
         floor: form.floor,
         benches: Number(form.benches),
+        columns: Number(form.columns),
       });
       alert("Room updated successfully ✅");
       setStep("rooms");
@@ -122,8 +136,15 @@ export default function RoomsManager({ onBack }) {
           <input
             type="number"
             name="benches"
-            placeholder="No. of Benches"
+            placeholder="Total Benches"
             value={form.benches}
+            onChange={handleChange}
+          />
+          <input
+            type="number"
+            name="columns"
+            placeholder="No. of Columns"
+            value={form.columns}
             onChange={handleChange}
           />
           <div className="btn-group">
@@ -162,8 +183,15 @@ export default function RoomsManager({ onBack }) {
             <input
               type="number"
               name="benches"
-              placeholder="No. of Benches"
+              placeholder="Total Benches"
               value={newRoom.benches}
+              onChange={handleNewRoomChange}
+            />
+            <input
+              type="number"
+              name="columns"
+              placeholder="No. of Columns"
+              value={newRoom.columns}
               onChange={handleNewRoomChange}
             />
             <button onClick={handleAddRoom} className="btn btn-green">
@@ -178,7 +206,9 @@ export default function RoomsManager({ onBack }) {
                 <div key={room._id} className="room-card">
                   <h2>Room {room.roomNo}</h2>
                   <p><strong>Floor:</strong> {room.floor}</p>
-                  <p><strong>Benches:</strong> {room.benches}</p>
+                  <p><strong>Total Benches:</strong> {room.benches}</p>
+                  <p><strong>Rows:</strong> {room.rows}</p>
+                  <p><strong>Columns:</strong> {room.columns}</p>
                   <div className="btn-group">
                     <button
                       onClick={() => handleEditRoom(room)}

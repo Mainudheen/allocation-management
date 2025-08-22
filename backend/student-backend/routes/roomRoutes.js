@@ -1,11 +1,12 @@
-const express = require('express');
+// routes/rooms.js
+const express = require("express");
 const router = express.Router();
-const Room = require('../models/Room');
+const Room = require("../models/Room");
 
 // =============================
 // Get all rooms (sorted by floor)
 // =============================
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const rooms = await Room.find().sort({ floor: 1, roomNo: 1 });
     res.status(200).json(rooms);
@@ -18,18 +19,26 @@ router.get('/', async (req, res) => {
 // =============================
 // Add a new room
 // =============================
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const { roomNo, floor, benches } = req.body;
+    const { roomNo, floor, benches, columns } = req.body;
+    console.log("📩 Received body:", req.body);
 
     // Basic validation
-    if (!roomNo || !floor || !benches) {
-      return res.status(400).json({ message: "All fields (roomNo, floor, benches) are required" });
+    if (!roomNo || !floor || !benches || !columns) {
+      return res.status(400).json({
+        message: "All fields (roomNo, floor, benches, columns) are required",
+      });
     }
 
-    if (benches <= 0) {
-      return res.status(400).json({ message: "Benches must be greater than 0" });
+    if (benches <= 0 || columns <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Benches and columns must be greater than 0" });
     }
+
+    // Compute rows automatically
+    const rows = Math.ceil(benches / columns);
 
     // Prevent duplicate room numbers
     const existingRoom = await Room.findOne({ roomNo });
@@ -37,24 +46,25 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: `Room ${roomNo} already exists` });
     }
 
-    const newRoom = new Room({ roomNo, floor, benches });
+    const newRoom = new Room({ roomNo, floor, benches, rows, columns });
     await newRoom.save();
 
     res.status(201).json({
-      message: '✅ Room added successfully',
-      room: newRoom
+      message: "✅ Room added successfully",
+      room: newRoom,
     });
-
   } catch (error) {
     console.error("❌ Error adding room:", error);
-    res.status(500).json({ message: 'Error adding room', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error adding room", error: error.message });
   }
 });
 
 // =============================
 // Delete a room
 // =============================
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const room = await Room.findByIdAndDelete(req.params.id);
 
@@ -62,28 +72,42 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ message: "Room not found" });
     }
 
-    res.status(200).json({ message: `✅ Room ${room.roomNo} deleted successfully` });
-
+    res
+      .status(200)
+      .json({ message: `✅ Room ${room.roomNo} deleted successfully` });
   } catch (error) {
     console.error("❌ Error deleting room:", error);
-    res.status(500).json({ message: "Error deleting room", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting room", error: error.message });
   }
 });
 
 // =============================
 // Update a room
 // =============================
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
-    const { roomNo, floor, benches } = req.body;
+    const { roomNo, floor, benches, columns } = req.body;
 
-    if (!roomNo || !floor || !benches) {
-      return res.status(400).json({ message: "All fields (roomNo, floor, benches) are required" });
+    if (!roomNo || !floor || !benches || !columns) {
+      return res.status(400).json({
+        message: "All fields (roomNo, floor, benches, columns) are required",
+      });
     }
+
+    if (benches <= 0 || columns <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Benches and columns must be greater than 0" });
+    }
+
+    // Compute rows automatically
+    const rows = Math.ceil(benches / columns);
 
     const updatedRoom = await Room.findByIdAndUpdate(
       req.params.id,
-      { roomNo, floor, benches },
+      { roomNo, floor, benches, rows, columns },
       { new: true, runValidators: true }
     );
 
@@ -92,13 +116,14 @@ router.put('/:id', async (req, res) => {
     }
 
     res.status(200).json({
-      message: '✅ Room updated successfully',
-      room: updatedRoom
+      message: "✅ Room updated successfully",
+      room: updatedRoom,
     });
-
   } catch (error) {
     console.error("❌ Error updating room:", error);
-    res.status(500).json({ message: "Error updating room", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating room", error: error.message });
   }
 });
 

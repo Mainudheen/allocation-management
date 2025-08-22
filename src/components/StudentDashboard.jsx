@@ -13,6 +13,7 @@ function StudentDashboard() {
   const [allocations, setAllocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Update countdowns every second
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
@@ -22,11 +23,9 @@ function StudentDashboard() {
         const key = `${allocation.examDate}-${allocation.room || allocation.lab || allocation.className}`;
         const sessionTime =
           allocation.time ||
-          allocation.examTime ||
           (allocation.session === "FN" ? "09:00" : "14:00");
 
-        const seconds = getTimeStatus(allocation.examDate, sessionTime, now);
-        newCountdowns[key] = seconds;
+        newCountdowns[key] = getTimeStatus(allocation.examDate, sessionTime, now);
       });
 
       setCountdowns(newCountdowns);
@@ -35,13 +34,10 @@ function StudentDashboard() {
     return () => clearInterval(timer);
   }, [allocations]);
 
+  // Fetch allocations
   useEffect(() => {
     if (initialAllocations.length > 0) {
-      const sorted = [...initialAllocations].sort(
-        (a, b) =>
-          new Date(`${a.examDate}T${a.session === "FN" ? "09:00" : "14:00"}`) -
-          new Date(`${b.examDate}T${b.session === "FN" ? "09:00" : "14:00"}`)
-      );
+      const sorted = sortAllocations(initialAllocations);
       setAllocations(sorted);
       setLoading(false);
     } else if (rollno) {
@@ -52,11 +48,7 @@ function StudentDashboard() {
         })
         .then((data) => {
           const formatted = Array.isArray(data) ? data : [data];
-          const sorted = [...formatted].sort(
-            (a, b) =>
-              new Date(`${a.examDate}T${a.session === "FN" ? "09:00" : "14:00"}`) -
-              new Date(`${b.examDate}T${b.session === "FN" ? "09:00" : "14:00"}`)
-          );
+          const sorted = sortAllocations(formatted);
           setAllocations(sorted);
           setLoading(false);
         })
@@ -78,6 +70,16 @@ function StudentDashboard() {
     return <p className="loading-text">⏳ Loading your exam schedule...</p>;
   }
 
+  // Sort allocations by date and session
+  function sortAllocations(list) {
+    return [...list].sort(
+      (a, b) =>
+        new Date(`${a.examDate}T${a.session === "FN" ? "09:00" : "14:00"}`) -
+        new Date(`${b.examDate}T${b.session === "FN" ? "09:00" : "14:00"}`)
+    );
+  }
+
+  // Countdown in seconds
   function getTimeStatus(examDate, time, now = new Date()) {
     if (!examDate || !time) return 0;
     const startTime = new Date(`${examDate}T${time}`);
@@ -85,6 +87,7 @@ function StudentDashboard() {
     return Math.floor(diffMs / 1000);
   }
 
+  // Format countdown
   function formatCountdown(seconds) {
     if (seconds > 0) {
       const hrs = Math.floor(seconds / 3600);
@@ -106,20 +109,29 @@ function StudentDashboard() {
     }
   }
 
-  return (
+  // ✅ Get student's seat (row, col, benchNo) from Allocation.students
+  function getStudentBench(allocation) {
+  const pos = allocation.students?.find(
+    (s) => s.rollno && s.rollno.toUpperCase() === rollno
+  );
 
+  if (!pos) return "N/A";
+
+  // If row is null, calculate row from benchNo and a fixed number of columns per row
+  const row = pos.row ?? Math.ceil(pos.benchNo / 5); // assuming 5 benches per row
+  const col = pos.col ?? ((pos.benchNo - 1) % 5 + 1); // calculate column if missing
+
+  return `Row ${row}, Col ${col}, Bench ${pos.benchNo}`;
+}
+
+
+
+  return (
     <>
-      {/* ✅ NAVBAR */}
       <nav className="navbar">
         <div className="navbar-left">
-          {/* <img
-            src="https://kms.kongu.edu/images/kongu.jpg"
-            alt="College Logo"
-            className="college-logo"
-          /> */}
           <span className="college-name">AUTOMATED HALL SCHEDULER</span>
         </div>
-
         <div className="navbar-right">
           <button className="nav-button" onClick={() => navigate('/')}>Home</button>
           <button
@@ -169,11 +181,9 @@ function StudentDashboard() {
 
               return (
                 <div
-                  className={`exam-card ${cardStatus} ${isLabExam ? "lab-exam" : isClassExam ? "class-exam" : ""
-                    }`}
+                  className={`exam-card ${cardStatus} ${isLabExam ? "lab-exam" : isClassExam ? "class-exam" : ""}`}
                   key={index}
                 >
-                  {/* Subject name at the top */}
                   <h2 className="subject-title">{subjectName || "Exam"}</h2>
 
                   <p><strong>Exam:</strong> {allocation.subjectWithCode || "N/A"}</p>
@@ -194,7 +204,6 @@ function StudentDashboard() {
                           : "N/A"}
                   </p>
 
-                  {/* Show based on type */}
                   {isLabExam ? (
                     <p><strong>Lab:</strong> {allocation.lab}</p>
                   ) : isClassExam ? (
@@ -202,6 +211,8 @@ function StudentDashboard() {
                   ) : (
                     <p><strong>Room:</strong> {allocation.room}</p>
                   )}
+
+                  <p><strong>Your Seat:</strong> {getStudentBench(allocation)}</p>
 
                   <p>
                     <strong>⏳ Countdown:</strong>{" "}
