@@ -40,6 +40,27 @@ function ManageAllocations() {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this allocation?")) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/allocations/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Remove allocation locally
+        setAllocations(prev => prev.filter(a => a._id !== id));
+        alert('✅ Allocation deleted successfully');
+      } else {
+        alert('❌ Failed to delete allocation');
+      }
+    } catch (err) {
+      console.error("Error deleting allocation:", err);
+    }
+  };
+
+
   useEffect(() => {
     fetch('http://localhost:5000/api/allocations')
       .then((res) => {
@@ -124,6 +145,10 @@ function ManageAllocations() {
 
                   <button className='save-button' onClick={() => handleInvigilatorSave(allocation._id, allocation.invigilators)}>
                      Save Invigilators
+                  </button>
+
+                   <button className='delete-button' onClick={() => handleDelete(allocation._id)}>
+                    ❌ Delete Allocation
                   </button>
                 </div>
               </div>

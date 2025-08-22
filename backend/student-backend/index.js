@@ -417,6 +417,45 @@ app.get("/api/students/:className/:year", async (req, res) => {
   }
 });
 
+/* -------------------- DELETE ALLOCATION -------------------- */
+
+// Delete allocation by ID
+app.delete("/api/allocations/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await Allocation.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Allocation not found" });
+    }
+
+    res.status(200).json({ message: "Allocation deleted successfully" });
+  } catch (err) {
+    console.error("Delete allocation error:", err);
+    res.status(500).json({ message: "Failed to delete allocation" });
+  }
+});
+
+// Delete lab allocation by ID (optional, if you also want to delete lab allocations)
+app.delete("/api/lab-allocations/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deleted = await LabAllocation.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Lab allocation not found" });
+    }
+
+    res.status(200).json({ message: "Lab allocation deleted successfully" });
+  } catch (err) {
+    console.error("Delete lab allocation error:", err);
+    res.status(500).json({ message: "Failed to delete lab allocation" });
+  }
+});
+
+
 
 /* -------------------- HEALTH CHECK -------------------- */
 
