@@ -69,7 +69,7 @@ function StudentDashboard() {
   if (loading) {
     return <p className="loading-text">⏳ Loading your exam schedule...</p>;
   }
-
+  //sort 
   // Sort allocations by date and session
   function sortAllocations(list) {
     return [...list].sort(
