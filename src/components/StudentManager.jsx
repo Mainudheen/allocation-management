@@ -5,6 +5,7 @@ import "./StudentManager.css";
 import "./card.css";
 import "./CatOptionsPage.css";
 
+
 const API_URL = "http://localhost:5000/api/students";
 
 export default function StudentManager() {

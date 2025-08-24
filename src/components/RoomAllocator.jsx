@@ -270,8 +270,28 @@ function RoomAllocator() {
           </select>
         </div>
 
-        <button className="btn-donate" onClick={allocate}>Allocate</button>
-        <button className="btn-donate" onClick={downloadExcel}>📥 Download Excel</button>
+        <button className="btn" onClick={allocate}>
+  <div id="container-stars">
+    <div id="stars"></div>
+  </div>
+  <strong>Allocate</strong>
+  <div id="glow">
+    <div className="circle"></div>
+    <div className="circle"></div>
+  </div>
+</button>
+
+<button className="btn" onClick={downloadExcel}>
+  <div id="container-stars">
+    <div id="stars"></div>
+  </div>
+  <strong>📥 Download Excel</strong>
+  <div id="glow">
+    <div className="circle"></div>
+    <div className="circle"></div>
+  </div>
+</button>
+
       </div>
 
       {/* Allocation Cards */}

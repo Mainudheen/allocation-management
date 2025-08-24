@@ -261,9 +261,17 @@ export default function ClassExamAllocator() {
         </div>
       )}
 
-      <button className="btn-donate" onClick={handleAllocate}>
-        Allocate Exam
-      </button>
+     <button className="btn" onClick={handleAllocate}>
+  <div id="container-stars">
+    <div id="stars"></div>
+  </div>
+  <strong>Allocate Exam</strong>
+  <div id="glow">
+    <div className="circle"></div>
+    <div className="circle"></div>
+  </div>
+</button>
+
 
       {/* Allocations preview */}
       {allocations.length > 0 && (

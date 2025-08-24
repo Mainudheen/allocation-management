@@ -1,64 +1,198 @@
-/* From Uiverse.io by Allyhere */ 
-.btn-donate {
-  --clr-font-main: hsla(0 0% 20% / 100);
-  --btn-bg-1: hsla(194 100% 69% / 1);
-  --btn-bg-2: hsla(217 100% 56% / 1);
-  --btn-bg-color: hsla(360 100% 100% / 1);
-  --radii: 0.5em;
-  cursor: pointer;
-  padding: 0.9em 1.4em;
-  min-width: 120px;
-  min-height: 44px;
-  font-size: var(--size, 1rem);
-  font-weight: 500;
-  transition: 0.8s;
-  background-size: 280% auto;
-  background-image: linear-gradient(
-    325deg,
-    var(--btn-bg-2) 0%,
-    var(--btn-bg-1) 55%,
-    var(--btn-bg-2) 90%
+/* From Uiverse.io by rubyreapergaming */ 
+
+
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 13rem;
+  overflow: hidden;
+  height: 3rem;
+  background-size: 300% 300%;
+  backdrop-filter: blur(1rem);
+  border-radius: 5rem;
+  transition: 0.5s;
+  animation: gradient_301 5s ease infinite;
+  border: double 4px transparent;
+  background-image: linear-gradient(#161a25, #161a25),
+  linear-gradient(
+    137.48deg,
+    #0072ff 10%,
+    #0738c0 45%,
+    #0738c0 67%,
+    #0738c0 87%
   );
-  border: none;
-  border-radius: var(--radii);
-  color: var(--btn-bg-color);
-  box-shadow:
-    0px 0px 20px rgba(71, 184, 255, 0.5),
-    0px 5px 5px -1px rgba(58, 125, 233, 0.25),
-    inset 4px 4px 8px rgba(175, 230, 255, 0.5),
-    inset -4px -4px 8px rgba(19, 95, 216, 0.35);
+
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  font-family: "Orbitron", sans-serif;
 }
 
-.btn-donate:hover {
-  background-position: right top;
+#container-stars {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transition: 0.5s;
+  backdrop-filter: blur(1rem);
+  border-radius: 5rem;
 }
 
-.btn-donate:is(:focus, :focus-visible, :active) {
-  outline: none;
-  box-shadow:
-    0 0 0 3px var(--btn-bg-color),
-    0 0 0 6px var(--btn-bg-2);
+strong {
+  z-index: 2;
+  font-family: "Orbitron", sans-serif;
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: #ffffff;
+  text-shadow: 0 0 4px white;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .btn-donate {
-    transition: linear;
+#glow {
+  position: absolute;
+  display: flex;
+  width: 12rem;
+}
+
+.circle-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: orbit 5s linear infinite;
+}
+
+.circle {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  filter: blur(2rem);
+}
+
+.circle:nth-of-type(1) {
+  background: rgba(245, 67, 79, 0.636);
+  animation: orbit 8s linear infinite;
+}
+
+.circle:nth-of-type(2) {
+  background: rgba(99, 30, 41, 0.704);
+  animation: orbit 10s linear infinite;
+}
+
+.btn:hover #container-stars {
+  z-index: 1;
+  background-color: #0738c0;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+}
+
+.btn:active {
+  border: double 4px #631e29;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  animation: none;
+}
+
+.btn:active .circle {
+  background: #631e29;
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(100px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(100px) rotate(-360deg);
   }
 }
-/* From Uiverse.io by Praashoo7 */ 
-.input {
-  border: none;
-  outline: none;
-  border-radius: 15px;
-  padding: 1em;
-  background-color: #ccc;
-  box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
-  transition: 300ms ease-in-out;
+
+#stars {
+  position: relative;
+  background: transparent;
+  width: 200rem;
+  height: 200rem;
 }
 
-.input:focus {
-  background-color: white;
-  transform: scale(1.05);
-  box-shadow: 13px 13px 100px #969696,
-             -13px -13px 100px #ffffff;
+#stars::after {
+  content: "";
+  position: absolute;
+  top: -10rem;
+  left: -100rem;
+  width: 100%;
+  height: 100%;
+  animation: animStarRotate 90s linear infinite;
+}
+
+#stars::after {
+  background-image: radial-gradient(#ffffff 1px, transparent 1%);
+  background-size: 50px 50px;
+}
+
+#stars::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 170%;
+  height: 500%;
+  animation: animStar 60s linear infinite;
+}
+
+#stars::before {
+  background-image: radial-gradient(#ffffff 1px, transparent 1%);
+  background-size: 50px 50px;
+  opacity: 0.5;
+}
+
+@keyframes animStar {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-135rem);
+  }
+}
+
+@keyframes animStarRotate {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0);
+  }
+}
+
+@keyframes gradient_301 {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse_3011 {
+  0% {
+    transform: scale(0.75);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.75);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
 }
