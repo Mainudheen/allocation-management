@@ -98,11 +98,12 @@ function RoomAllocator() {
 
     for (let i = 0; i < usableRooms.length && studentIndex < rollNumbers.length; i++) {
       const room = usableRooms[i];
-      const rows = room.rows || room.benches || 5; // use rows field if exists
-      const columns = room.columns || 2;
-      const batchSize = rows * columns;
+      if (!room.columns || !room.columns.length) continue;
 
-      const studentsForRoom = rollNumbers.slice(studentIndex, studentIndex + batchSize)
+      // compute total seats in this room
+      const totalSeats = room.columns.reduce((acc, col) => acc + col.rows, 0);
+
+      const studentsForRoom = rollNumbers.slice(studentIndex, studentIndex + totalSeats)
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       if (!studentsForRoom.length) break;
 
@@ -110,17 +111,20 @@ function RoomAllocator() {
       const inv2 = shuffledInvigilators[(invIndex + 1) % shuffledInvigilators.length];
       invIndex += 2;
 
-      const studentPositions = studentsForRoom.map((roll, idx) => {
-        const row = (idx % rows) + 1;                // cycle through rows
-        const col = Math.floor(idx / rows) + 1;      // increase col after finishing all rows
-
-        return {
-          roll,
-          bench: row,   // bench is essentially the row number
-          col
-        };
-      });
-
+      // assign students column by column
+      let posIndex = 0;
+      const studentPositions = [];
+      for (const col of room.columns) {
+        for (let r = 1; r <= col.rows; r++) {
+          if (posIndex >= studentsForRoom.length) break;
+          studentPositions.push({
+            roll: studentsForRoom[posIndex],
+            bench: r,
+            col: col.colNo
+          });
+          posIndex++;
+        }
+      }
 
       finalAllocation.push({
         room: room.roomNo,
@@ -139,7 +143,7 @@ function RoomAllocator() {
         studentPositions
       });
 
-      studentIndex += batchSize;
+      studentIndex += totalSeats;
     }
 
     // Handle leftover students
@@ -211,7 +215,8 @@ function RoomAllocator() {
     <div className="dashboard-container">
       <h2 className="section-title">📅 Schedule an Exam</h2>
       <div className="control-panel">
-        {/* All form controls */}
+
+        {/* Form Controls */}
         <div>
           <label>CAT:</label>
           <div className="radio-group compact">
@@ -264,33 +269,25 @@ function RoomAllocator() {
         <div>
           <label>Select Rooms (Auto Allocates):</label>
           <select multiple value={selectedRooms} onChange={handleRoomSelection}>
-            {allRooms.map((room, i) => <option key={i} value={room.roomNo}>
-              {room.roomNo} - {room.floor} - {room.rows || room.benches || 5} rows × {room.columns || 2} cols
-            </option>)}
+            {allRooms.map((room, i) => (
+              <option key={i} value={room.roomNo}>
+                {room.roomNo} - {room.floor} - {room.columns?.length || 0} cols ({room.columns?.map(c => `${c.rows} rows`).join(", ")})
+              </option>
+            ))}
           </select>
         </div>
 
         <button className="btn" onClick={allocate}>
-  <div id="container-stars">
-    <div id="stars"></div>
-  </div>
-  <strong>Allocate</strong>
-  <div id="glow">
-    <div className="circle"></div>
-    <div className="circle"></div>
-  </div>
-</button>
+          <div id="container-stars"><div id="stars"></div></div>
+          <strong>Allocate</strong>
+          <div id="glow"><div className="circle"></div><div className="circle"></div></div>
+        </button>
 
-<button className="btn" onClick={downloadExcel}>
-  <div id="container-stars">
-    <div id="stars"></div>
-  </div>
-  <strong>📥 Download Excel</strong>
-  <div id="glow">
-    <div className="circle"></div>
-    <div className="circle"></div>
-  </div>
-</button>
+        <button className="btn" onClick={downloadExcel}>
+          <div id="container-stars"><div id="stars"></div></div>
+          <strong>📥 Download Excel</strong>
+          <div id="glow"><div className="circle"></div><div className="circle"></div></div>
+        </button>
 
       </div>
 

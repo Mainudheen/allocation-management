@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import './StudentDashboard.css';
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import "./StudentDashboard.css";
 
 function StudentDashboard() {
   const { state } = useLocation();
@@ -13,6 +13,10 @@ function StudentDashboard() {
   const [allocations, setAllocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // modal state
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [roomLayout, setRoomLayout] = useState(null);
+
   // Update countdowns every second
   useEffect(() => {
     const timer = setInterval(() => {
@@ -21,9 +25,7 @@ function StudentDashboard() {
 
       allocations.forEach((allocation) => {
         const key = `${allocation.examDate}-${allocation.room || allocation.lab || allocation.className}`;
-        const sessionTime =
-          allocation.time ||
-          (allocation.session === "FN" ? "09:00" : "14:00");
+        const sessionTime = allocation.time || (allocation.session === "FN" ? "09:00" : "14:00");
 
         newCountdowns[key] = getTimeStatus(allocation.examDate, sessionTime, now);
       });
@@ -69,7 +71,7 @@ function StudentDashboard() {
   if (loading) {
     return <p className="loading-text">⏳ Loading your exam schedule...</p>;
   }
-  //sort 
+
   // Sort allocations by date and session
   function sortAllocations(list) {
     return [...list].sort(
@@ -111,20 +113,31 @@ function StudentDashboard() {
 
   // ✅ Get student's seat (row, col, benchNo) from Allocation.students
   function getStudentBench(allocation) {
-  const pos = allocation.students?.find(
-    (s) => s.rollno && s.rollno.toUpperCase() === rollno
-  );
+    const pos = allocation.students?.find((s) => s.rollno && s.rollno.toUpperCase() === rollno);
 
-  if (!pos) return "N/A";
+    if (!pos) return "N/A";
 
-  // If row is null, calculate row from benchNo and a fixed number of columns per row
-  const row = pos.row ?? Math.ceil(pos.benchNo / 5); // assuming 5 benches per row
-  const col = pos.col ?? ((pos.benchNo - 1) % 5 + 1); // calculate column if missing
+    //const row = pos.row ?? Math.ceil(pos.benchNo / 5);
+    const col = pos.col ?? ((pos.benchNo - 1) % 5 + 1);
 
-  return `Row ${row}, Col ${col}, Bench ${pos.benchNo}`;
-}
+    return ` Col ${col}, Bench ${pos.benchNo}`;
+  }
 
-
+  // ✅ Fetch room layout when "View Seating" is clicked
+  function handleViewSeating(roomNo, allocation) {
+    fetch(`http://localhost:5000/api/rooms/${roomNo}`)
+      .then((res) => res.json())
+      .then((roomData) => {
+        setRoomLayout({
+          ...roomData,
+          studentSeat: allocation.students.find(
+            (s) => s.rollno && s.rollno.toUpperCase() === rollno
+          ),
+        });
+        setSelectedRoom(allocation.room);
+      })
+      .catch((err) => console.error("Error fetching room layout:", err));
+  }
 
   return (
     <>
@@ -133,12 +146,14 @@ function StudentDashboard() {
           <span className="college-name">AUTOMATED HALL SCHEDULER</span>
         </div>
         <div className="navbar-right">
-          <button className="nav-button" onClick={() => navigate('/')}>Home</button>
+          <button className="nav-button" onClick={() => navigate("/")}>
+            Home
+          </button>
           <button
             className="nav-button"
             onClick={() => {
               localStorage.clear();
-              navigate('/');
+              navigate("/");
             }}
           >
             Logout
@@ -218,6 +233,15 @@ function StudentDashboard() {
                     <strong>⏳ Countdown:</strong>{" "}
                     {formatCountdown(countdowns[countdownKey] || 0)}
                   </p>
+
+                  {!isLabExam && !isClassExam && (
+                    <button
+                      className="view-seating-btn"
+                      onClick={() => handleViewSeating(allocation.room, allocation)}
+                    >
+                      View Seating
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -226,6 +250,66 @@ function StudentDashboard() {
           <p className="error-text">❌ No exams scheduled. Please check back later.</p>
         )}
       </div>
+
+      {/* ✅ Modal for Room Layout */}
+      {roomLayout && (
+        <div className="modal-overlay" onClick={() => setRoomLayout(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Room {selectedRoom} Seating Layout</h2>
+       <div
+  className="seating-grid"
+  style={{
+    display: "flex",
+    gap: "30px",
+    justifyContent: "center",
+    marginTop: "20px",
+  }}
+>
+  {roomLayout.columns.map((col, colIndex) => (
+    <div
+      key={col.colNo}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        alignItems: "center",
+      }}
+    >
+      {/* Column label */}
+      <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+        Col {col.colNo}
+      </div>
+
+      {/* Benches */}
+      {Array.from({ length: col.rows }, (_, benchIndex) => {
+  const globalBenchNo =
+    benchIndex + 1 + roomLayout.columns
+      .slice(0, colIndex)
+      .reduce((sum, c) => sum + c.rows, 0);
+
+  const isStudentSeat = roomLayout.studentSeat?.benchNo === globalBenchNo;
+
+  return (
+    <div
+      key={benchIndex}
+      className={`seat-circle ${isStudentSeat ? "highlight-seat" : ""}`}
+      style={{ width: "40px", height: "40px" }}
+    >
+      {globalBenchNo}
+    </div>
+  );
+})}
+
+    </div>
+  ))}
+</div>
+
+
+
+            <button className="close-btn" onClick={() => setRoomLayout(null)}>Close</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -1,27 +1,26 @@
 // src/components/RoomsManager.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./RoomManager.css"; // ✅ Separate CSS file
+import "./RoomManager.css";
 
 const ROOM_API_URL = "http://localhost:5000/api/rooms";
 
 export default function RoomsManager({ onBack }) {
   const [rooms, setRooms] = useState([]);
   const [step, setStep] = useState("rooms"); // rooms | editRoom
+  const [selectedRoom, setSelectedRoom] = useState(null); // ✅ for seating modal
 
   const [form, setForm] = useState({
     roomNo: "",
     floor: "",
-    benches: "",
-    columns: "",
+    columns: [],
     _id: "",
   });
 
   const [newRoom, setNewRoom] = useState({
     roomNo: "",
     floor: "",
-    benches: "",
-    columns: "",
+    columns: [{ colNo: 1, rows: 0 }],
   });
 
   // ✅ Fetch Rooms
@@ -47,57 +46,97 @@ export default function RoomsManager({ onBack }) {
     setNewRoom({ ...newRoom, [e.target.name]: e.target.value });
   };
 
+  // ✅ Handle Column Changes
+  const handleColumnChange = (roomState, setRoomState, index, field, value) => {
+    const updatedColumns = [...roomState.columns];
+    updatedColumns[index][field] =
+      field === "colNo" || field === "rows" ? Number(value) : value;
+    setRoomState({ ...roomState, columns: updatedColumns });
+  };
+
+  const addColumn = (roomState, setRoomState) => {
+    const newColNo = roomState.columns.length + 1;
+    setRoomState({
+      ...roomState,
+      columns: [...roomState.columns, { colNo: newColNo, rows: 0 }],
+    });
+  };
+
+  const removeColumn = (roomState, setRoomState, index) => {
+    const updatedColumns = roomState.columns.filter((_, i) => i !== index);
+    setRoomState({ ...roomState, columns: updatedColumns });
+  };
+
   // ✅ Add Room
   const handleAddRoom = async () => {
-    if (!newRoom.roomNo || !newRoom.floor || !newRoom.benches || !newRoom.columns) {
+    if (!newRoom.roomNo || !newRoom.floor) {
       alert("Please fill all fields");
       return;
     }
+
+    const preparedRoom = {
+      ...newRoom,
+      columns: newRoom.columns.map((col, i) => ({
+        colNo: Number(col.colNo || i + 1),
+        rows: Number(col.rows),
+      })),
+    };
+
+    if (preparedRoom.columns.some((col) => col.rows <= 0)) {
+      alert("Each column must have rows > 0");
+      return;
+    }
+
     try {
-      await axios.post(ROOM_API_URL, {
-        roomNo: newRoom.roomNo,
-        floor: newRoom.floor,
-        benches: Number(newRoom.benches),
-        columns: Number(newRoom.columns),
-      });
+      await axios.post(ROOM_API_URL, preparedRoom);
       alert("Room added successfully ✅");
-      setNewRoom({ roomNo: "", floor: "", benches: "", columns: "" });
+      setNewRoom({ roomNo: "", floor: "", columns: [{ colNo: 1, rows: 0 }] });
       fetchRooms();
     } catch (err) {
       alert("Failed to add room ❌");
-      console.error(err);
+      console.error(err.response?.data || err);
     }
   };
 
   // ✅ Edit Room
   const handleEditRoom = (room) => {
     setForm({
-      ...room,
-      benches: room.benches || 0,
-      columns: room.columns || 0,
+      _id: room._id,
+      roomNo: room.roomNo,
+      floor: room.floor,
+      columns: room.columns,
     });
     setStep("editRoom");
   };
 
   // ✅ Update Room
   const handleUpdateRoom = async () => {
-    if (!form.roomNo || !form.floor || !form.benches || !form.columns) {
+    if (!form.roomNo || !form.floor) {
       alert("Please fill all fields");
       return;
     }
+
+    const preparedForm = {
+      ...form,
+      columns: form.columns.map((col, i) => ({
+        colNo: Number(col.colNo || i + 1),
+        rows: Number(col.rows),
+      })),
+    };
+
+    if (preparedForm.columns.some((col) => col.rows <= 0)) {
+      alert("Each column must have rows > 0");
+      return;
+    }
+
     try {
-      await axios.put(`${ROOM_API_URL}/${form._id}`, {
-        roomNo: form.roomNo,
-        floor: form.floor,
-        benches: Number(form.benches),
-        columns: Number(form.columns),
-      });
+      await axios.put(`${ROOM_API_URL}/${form._id}`, preparedForm);
       alert("Room updated successfully ✅");
       setStep("rooms");
       fetchRooms();
     } catch (err) {
       alert("Failed to update room ❌");
-      console.error(err);
+      console.error(err.response?.data || err);
     }
   };
 
@@ -112,6 +151,12 @@ export default function RoomsManager({ onBack }) {
       console.error(err);
     }
   };
+
+  // ✅ Grand total benches across all rooms
+  const grandTotalBenches = rooms.reduce(
+    (sum, room) => sum + (room.totalBenches || 0),
+    0
+  );
 
   return (
     <div className="rooms-container">
@@ -133,20 +178,36 @@ export default function RoomsManager({ onBack }) {
             <option value="Second">Second</option>
             <option value="Third">Third</option>
           </select>
-          <input
-            type="number"
-            name="benches"
-            placeholder="Total Benches"
-            value={form.benches}
-            onChange={handleChange}
-          />
-          <input
-            type="number"
-            name="columns"
-            placeholder="No. of Columns"
-            value={form.columns}
-            onChange={handleChange}
-          />
+
+          <h3>Columns</h3>
+          {form.columns.map((col, index) => (
+            <div key={index} className="column-row">
+              <span>Col {col.colNo}:</span>
+              <input
+                type="number"
+                placeholder="Rows"
+                value={col.rows}
+                onChange={(e) =>
+                  handleColumnChange(form, setForm, index, "rows", e.target.value)
+                }
+              />
+              <button
+                type="button"
+                className="btn btn-red small-btn"
+                onClick={() => removeColumn(form, setForm, index)}
+              >
+                ✖
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn btn-green small-btn"
+            onClick={() => addColumn(form, setForm)}
+          >
+            ➕ Add Column
+          </button>
+
           <div className="btn-group">
             <button onClick={handleUpdateRoom} className="btn btn-blue">
               Update Room
@@ -163,7 +224,6 @@ export default function RoomsManager({ onBack }) {
         <div>
           <h1 className="page-title">🏫 Manage Rooms</h1>
 
-          {/* Add New Room Form */}
           <div className="form-card">
             <h2>➕ Add New Room</h2>
             <input
@@ -173,27 +233,53 @@ export default function RoomsManager({ onBack }) {
               value={newRoom.roomNo}
               onChange={handleNewRoomChange}
             />
-            <select name="floor" value={newRoom.floor} onChange={handleNewRoomChange}>
+            <select
+              name="floor"
+              value={newRoom.floor}
+              onChange={handleNewRoomChange}
+            >
               <option value="">Select Floor</option>
               <option value="Ground">Ground</option>
               <option value="First">First</option>
               <option value="Second">Second</option>
               <option value="Third">Third</option>
             </select>
-            <input
-              type="number"
-              name="benches"
-              placeholder="Total Benches"
-              value={newRoom.benches}
-              onChange={handleNewRoomChange}
-            />
-            <input
-              type="number"
-              name="columns"
-              placeholder="No. of Columns"
-              value={newRoom.columns}
-              onChange={handleNewRoomChange}
-            />
+
+            <h3>Columns</h3>
+            {newRoom.columns.map((col, index) => (
+              <div key={index} className="column-row">
+                <span>Col {col.colNo}:</span>
+                <input
+                  type="number"
+                  placeholder="Rows"
+                  value={col.rows}
+                  onChange={(e) =>
+                    handleColumnChange(
+                      newRoom,
+                      setNewRoom,
+                      index,
+                      "rows",
+                      e.target.value
+                    )
+                  }
+                />
+                <button
+                  type="button"
+                  className="btn btn-red small-btn"
+                  onClick={() => removeColumn(newRoom, setNewRoom, index)}
+                >
+                  ✖
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn btn-green small-btn"
+              onClick={() => addColumn(newRoom, setNewRoom)}
+            >
+              ➕ Add Column
+            </button>
+
             <button onClick={handleAddRoom} className="btn btn-green">
               Add Room
             </button>
@@ -205,10 +291,21 @@ export default function RoomsManager({ onBack }) {
               rooms.map((room) => (
                 <div key={room._id} className="room-card">
                   <h2>Room {room.roomNo}</h2>
-                  <p><strong>Floor:</strong> {room.floor}</p>
-                  <p><strong>Total Benches:</strong> {room.benches}</p>
-                  <p><strong>Rows:</strong> {room.rows}</p>
-                  <p><strong>Columns:</strong> {room.columns}</p>
+                  <p>
+                    <strong>Floor:</strong> {room.floor}
+                  </p>
+                  <h4>Columns:</h4>
+                  <ul>
+                    {room.columns.map((col, idx) => (
+                      <li key={idx}>
+                        Col {col.colNo}: {col.rows} rows
+                      </li>
+                    ))}
+                  </ul>
+                  <p>
+                    <strong>Total Benches:</strong> {room.totalBenches}
+                  </p>
+
                   <div className="btn-group">
                     <button
                       onClick={() => handleEditRoom(room)}
@@ -222,6 +319,12 @@ export default function RoomsManager({ onBack }) {
                     >
                       🗑 Delete
                     </button>
+                    <button
+                      onClick={() => setSelectedRoom(room)}
+                      className="btn btn-green"
+                    >
+                      🪑 Seating
+                    </button>
                   </div>
                 </div>
               ))
@@ -230,9 +333,65 @@ export default function RoomsManager({ onBack }) {
             )}
           </div>
 
+          {/* ✅ Grand total across all rooms */}
+          {rooms.length > 0 && (
+            <div className="total-benches">
+              <h3>🏷 Total Benches in Building: {grandTotalBenches}</h3>
+            </div>
+          )}
+
           <button onClick={onBack} className="btn btn-gray back-btn">
             ⬅ Back
           </button>
+        </div>
+      )}
+
+      {/* ---------------- Seating Modal ---------------- */}
+      {selectedRoom && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>
+              🪑 Seating Layout - Room {selectedRoom.roomNo} ({selectedRoom.floor}
+              )
+            </h2>
+            <div
+              className="seating-layout"
+              style={{ display: "flex", gap: "20px", marginTop: "20px" }}
+            >
+              {selectedRoom.columns.map((col) => (
+                <div key={col.colNo} style={{ textAlign: "center" }}>
+                  <h4>Col {col.colNo}</h4>
+                  <div style={{ display: "grid", gap: "5px" }}>
+                    {Array.from({ length: col.rows }).map((_, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          width: "40px",
+                          height: "30px",
+                          border: "1px solid #555",
+                          borderRadius: "4px",
+                          background: "#f5f5f5",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {idx + 1}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              className="btn btn-gray"
+              style={{ marginTop: "20px" }}
+              onClick={() => setSelectedRoom(null)}
+            >
+              ❌ Close
+            </button>
+          </div>
         </div>
       )}
     </div>
