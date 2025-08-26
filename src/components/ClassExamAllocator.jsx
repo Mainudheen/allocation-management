@@ -1,7 +1,6 @@
 // src/components/ClassExamAllocator.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import * as XLSX from "xlsx";
 import "./ClassExamAllocator.css";
 import "./button.css";
 
@@ -14,8 +13,8 @@ export default function ClassExamAllocator() {
   const [year, setYear] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
 
-  const [students, setStudents] = useState([]); // fetched from DB
-  const [selectedRolls, setSelectedRolls] = useState([]); // clicked roll numbers across all classes
+  const [students, setStudents] = useState([]);
+  const [selectedRolls, setSelectedRolls] = useState([]);
   const [allRooms, setAllRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState("");
   const [allocations, setAllocations] = useState([]);
@@ -70,12 +69,14 @@ export default function ClassExamAllocator() {
       return;
     }
 
-    // Shuffle invigilators
     const shuffledInvigilators = [...invigilatorList].sort(() => 0.5 - Math.random());
     let invIndex = 0;
 
-    // Find starting room and split students across rooms
-    const startIndex = allRooms.findIndex(r => r.roomNo === selectedRoom);
+    const startIndex = allRooms.findIndex(r => String(r.roomNo) === String(selectedRoom));
+    if (startIndex === -1) {
+      alert("⚠ Starting room not found!");
+      return;
+    }
     const usableRooms = allRooms.slice(startIndex);
 
     let studentIndex = 0;
@@ -83,12 +84,26 @@ export default function ClassExamAllocator() {
 
     for (let i = 0; i < usableRooms.length && studentIndex < selectedRolls.length; i++) {
       const room = usableRooms[i];
-      const batchSize = room.benches; // Number of students per room
-      const studentsForRoom = selectedRolls.slice(studentIndex, studentIndex + batchSize);
-      if (!studentsForRoom.length) break;
+      const studentPositions = [];
+      let posIndex = 0;
 
-      const inv1 = shuffledInvigilators[invIndex++];
-      const inv2 = shuffledInvigilators[invIndex++];
+      for (const col of room.columns) {
+        for (let r = 1; r <= col.rows; r++) {
+          if (studentIndex >= selectedRolls.length) break;
+          studentPositions.push({
+            roll: selectedRolls[studentIndex],
+            bench: r,
+            col: col.colNo
+          });
+          studentIndex++;
+          posIndex++;
+        }
+      }
+
+      if (studentPositions.length === 0) break;
+
+      const inv1 = shuffledInvigilators[invIndex++ % shuffledInvigilators.length];
+      const inv2 = shuffledInvigilators[invIndex++ % shuffledInvigilators.length];
 
       finalAllocations.push({
         className: selectedClass,
@@ -100,11 +115,12 @@ export default function ClassExamAllocator() {
         subjectWithCode,
         room: room.roomNo,
         hallNo: room.hallNo || "N/A",
-        assignedStudents: studentsForRoom,
+        totalStudents: studentPositions.length,
+        rollStart: studentPositions[0].roll,
+        rollEnd: studentPositions[studentPositions.length - 1].roll,
+        studentPositions,
         invigilators: [inv1, inv2],
       });
-
-      studentIndex += batchSize;
     }
 
     if (studentIndex < selectedRolls.length) {
@@ -119,7 +135,10 @@ export default function ClassExamAllocator() {
         subjectWithCode,
         room: "❌ No Hall Available",
         hallNo: "N/A",
-        assignedStudents: leftover,
+        totalStudents: leftover.length,
+        rollStart: leftover[0],
+        rollEnd: leftover[leftover.length - 1],
+        studentPositions: leftover.map((r) => ({ roll: r, bench: "-", col: "-" })),
         invigilators: ["-", "-"],
         isUnallocated: true,
       });
@@ -231,7 +250,6 @@ export default function ClassExamAllocator() {
           type="button"
           onClick={() =>
             setSelectedRolls((prev) => {
-              // Merge previous selection with all students, remove duplicates
               const allRolls = students.map((s) => s.rollno);
               const merged = Array.from(new Set([...prev, ...allRolls]));
               return merged;
@@ -245,8 +263,7 @@ export default function ClassExamAllocator() {
         </button>
       </div>
 
-
-      {/* Student roll numbers grid view */}
+      {/* Student roll numbers grid */}
       {students.length > 0 && (
         <div className="students-grid">
           {students.map((stu) => (
@@ -261,17 +278,16 @@ export default function ClassExamAllocator() {
         </div>
       )}
 
-     <button className="btn" onClick={handleAllocate}>
-  <div id="container-stars">
-    <div id="stars"></div>
-  </div>
-  <strong>Allocate Exam</strong>
-  <div id="glow">
-    <div className="circle"></div>
-    <div className="circle"></div>
-  </div>
-</button>
-
+      <button className="btn" onClick={handleAllocate}>
+        <div id="container-stars">
+          <div id="stars"></div>
+        </div>
+        <strong>Allocate Exam</strong>
+        <div id="glow">
+          <div className="circle"></div>
+          <div className="circle"></div>
+        </div>
+      </button>
 
       {/* Allocations preview */}
       {allocations.length > 0 && (
@@ -280,8 +296,15 @@ export default function ClassExamAllocator() {
           {allocations.map((alloc, idx) => (
             <div key={idx} className="allocation-card">
               <p><strong>Room:</strong> {alloc.room}</p>
-              <p><strong>Students:</strong> {alloc.assignedStudents.join(", ")}</p>
               <p><strong>Invigilators:</strong> {alloc.invigilators.join(", ")}</p>
+              <p><strong>Students:</strong></p>
+              <ul>
+                {alloc.studentPositions.map((s, i) => (
+                  <li key={i}>
+                    {s.roll} → Col {s.col}, Bench {s.bench}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

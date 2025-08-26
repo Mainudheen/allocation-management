@@ -47,6 +47,11 @@ function RoomAllocator() {
       setSemNo(existingAllocation.semester?.match(/\d+/)?.[0] || '');
       setHallNo(existingAllocation.hallNo || '');
       setSelectedRooms(existingAllocation.room ? existingAllocation.room.split(', ') : []);
+      setTime(existingAllocation.time || '');   // ✅ keep old time
+    if (existingAllocation.rollStart && existingAllocation.rollEnd) {
+      // generate roll numbers back if available
+      setRollNumbers(existingAllocation.studentPositions?.map(sp => sp.roll) || []);
+    }
     }
   }, [isEditMode, existingAllocation]);
 
@@ -81,10 +86,15 @@ function RoomAllocator() {
   };
 
   const allocate = async () => {
-    if (!rollNumbers.length || !cat || !session || !examDate || !subjectWithCode || !year || !semNo || !selectedRooms.length || !time) {
+    if (!cat || !session || !examDate || !subjectWithCode || !year || !semNo || !selectedRooms.length) {
       alert("Please complete all fields including time and upload roll numbers");
       return;
     }
+
+    if (!isEditMode && (!rollNumbers.length || !time)) {
+  alert("Please upload roll numbers and provide exam time");
+  return;
+}
 
     const semesterDisplay = semNo && (parseInt(semNo) % 2 === 1 ? `Odd Sem ${semNo}` : `Even Sem ${semNo}`);
     const startingRoomNo = selectedRooms[0];
