@@ -1,23 +1,28 @@
 /* Page Centering */
 .page-container {
-  min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: center;   /* center horizontally */
+  align-items: center;       /* center vertically */
+  height: 100vh;             /* take full viewport height */
+  width: 100%;               /* full width */
 }
 
+/* Wrapper */
 .centered-wrapper {
-  text-align: center;
   width: 100%;
-  max-width: 600px;
+  max-width: 1000px; /* enough space for 3 cards */
+  display: flex;
+  justify-content: center;
 }
 
 /* Grid for main menu */
 .card-grid {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  flex-direction: row; /* keep in row */
+  gap: 20px;           /* space between cards */
+  justify-content: center; 
   align-items: center;
+  flex-wrap: nowrap;   /* prevent wrapping */
 }
 
 /* Option cards */
@@ -27,17 +32,46 @@
   font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.3s ease;
-  width: 100%;
-  max-width: 300px;
+  transition: all 0.3s ease;
+  width: 280px;      /* fixed width */
+  height: 180px;     /* fixed height */
   text-align: center;
-  color: rgb(5, 5, 6);
+  color: #fff;
+  display: flex;     /* center content inside card */
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: #062e6e;
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.1);
+  border: 1px solid #e0f2ff;
 }
 
+/* Card Hover Effects */
 .cat-option-card:hover {
-  transform: translateY(-3px);
+  transform: scale(1.08);
+  box-shadow: 0 0 30px rgba(0, 140, 255, 0.4);
 }
 
+.cat-option-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(0deg, transparent, transparent 30%, rgba(0, 140, 255, 0.15));
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+  z-index: 1;
+}
+.cat-option-card:hover::before {
+  opacity: 1;
+  transform: rotate(-45deg) translateY(100%);
+}
+
+/* Option colors (default background) */
 .option-blue { background: #062e6e; }
 .option-red { background: #062e6e; }
 .option-gray { background: #062e6e; }
@@ -64,6 +98,16 @@
   border-radius: 8px;
   width: 100%;
   max-width: 300px;
+  transition: all 0.3s ease;
+}
+
+/* Input focus effect */
+.form-card input:focus,
+.form-card select:focus {
+  border-color: #4a90e2;
+  background-color: #fff;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+  outline: none;
 }
 
 .btn-group {
@@ -80,12 +124,30 @@
   cursor: pointer;
   font-weight: 600;
   color: white;
-  transition: opacity 0.2s ease;
+  transition: all 0.3s ease;
+  border: none;
 }
 
-.btn:hover { opacity: 0.9; }
-.btn-primary { background: #2563eb; }
-.btn-secondary { background: #6b7280; }
+/* Button hover with gradient & scale */
+.btn:hover {
+  opacity: 0.95;
+  transform: scale(1.04);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary { 
+  background: linear-gradient(90deg, #007bff, #0056b3);
+}
+/* .btn-primary:hover {
+  background: linear-gradient(90deg, #0056b3, #004494);
+} */
+
+.btn-secondary { 
+  background: #6b7280; 
+}
+.btn-secondary:hover {
+  background: #4b5563;
+}
 
 /* Student info card */
 .student-info-card {
@@ -103,4 +165,10 @@
 .rooms-old-style {
   margin-top: 30px;
   text-align: left;
+}
+
+/* Table Styling Example (if needed later) */
+.allocation-table tbody tr:hover {
+  background-color: #e6f2ff;
+  transition: background-color 0.3s ease-in-out;
 }
