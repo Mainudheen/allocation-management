@@ -355,190 +355,150 @@ function RoomAllocator() {
   // For each allocation we will:
   //  - fetch room structure (columns/rows) from backend (/api/rooms/:roomNo)
   //  - produce a nicely formatted page with header + seating layout table
-  const downloadFormatDocx = async () => {
-    if (!allocations.length) {
-      alert("No allocations to export.");
-      return;
-    }
+const downloadFormatDocx = async () => {
+  if (!allocations.length) {
+    alert("No allocations to export.");
+    return;
+  }
 
-    // Helper: fetch a room by roomNo
-    const fetchRoom = async (roomNo) => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/rooms/${encodeURIComponent(roomNo)}`);
-        if (!res.ok) return null;
-        const r = await res.json();
-        return r;
-      } catch (e) {
-        console.warn("Failed to fetch room", roomNo, e);
-        return null;
-      }
-    };
+  // Collect unique hall names
+  const hallNames = [...new Set(allocations.map(a => a.room))];
 
-    // Build document sections (one per allocation)
-    const doc = new DocxDocument({
-      sections: [],
-    });
-
-    // We'll create a page per allocation (skipping any summary first-page formatting)
-    for (const alloc of allocations) {
-      // If this is the "No Hall Available" unallocated entry, still create a page with leftover rolls listed
-      let roomDef = null;
-      if (alloc.room && alloc.room !== "❌ No Hall Available") {
-        roomDef = await fetchRoom(alloc.room);
-      }
-
-      // Header lines (centered)
-      const headerParas = [
-        new Paragraph({
-          text: `Hall ${alloc.hallNo || "N/A"}  |  ${alloc.examDate || ""}  |  ${alloc.session || ""}`,
-          heading: HeadingLevel.HEADING_2,
-          alignment: AlignmentType.CENTER,
-        }),
-        new Paragraph({ text: "" }),
-        new Paragraph({
+  // Build rows for the summary table
+  const summaryRows = allocations.map((a, idx) => {
+    return new TableRow({
+      children: [
+        new TableCell({ children: [new Paragraph(String(idx + 1))] }),
+        new TableCell({
           children: [
-            new TextRun({ text: alloc.room || "", bold: true }),
-          ],
-          alignment: AlignmentType.CENTER,
+            new Paragraph(`${a.examDate}`),
+            new Paragraph(`${a.time} ${a.session}`)
+          ]
         }),
-        new Paragraph({ text: "" }),
-        new Paragraph({
-          children: [
-            new TextRun({ text: alloc.time || "" }),
-          ],
-          alignment: AlignmentType.CENTER,
-        }),
-        new Paragraph({ text: "" }),
-        new Paragraph({
-          children: [
-            new TextRun({ text: `${alloc.rollStart || "-"}  –  ${alloc.rollEnd || "-" } (${alloc.totalStudents || 0})`, bold: false }),
-          ],
-          alignment: AlignmentType.CENTER,
-        }),
-        new Paragraph({ text: "" }),
-        new Paragraph({
-          children: [
-            new TextRun({ text: alloc.subjectWithCode || "", italics: false }),
-          ],
-          alignment: AlignmentType.CENTER,
-        }),
-        new Paragraph({
-          children: [
-            new TextRun({ text: alloc.year || "" }),
-          ],
-          alignment: AlignmentType.CENTER,
-        }),
-        new Paragraph({
-          children: [
-            new TextRun({ text: alloc.semester || "" }),
-          ],
-          alignment: AlignmentType.CENTER,
-        }),
-        new Paragraph({ text: "" }),
-      ];
-
-      // Build seating table. We want columns equal to number of columns in roomDef (or fallback).
-      // For the layout you showed: each column C1..Cn is a vertical column, with benches as rows.
-      let table;
-      if (roomDef && Array.isArray(roomDef.columns) && roomDef.columns.length > 0) {
-        const columns = roomDef.columns; // each has { colNo, rows }
-        const maxRows = columns.reduce((max, c) => Math.max(max, Number(c.rows || 0)), 0);
-
-        // Prepare matrix: rows are benches (1..maxRows), columns are C1..Cn
-        // Fill with roll numbers according to alloc.studentPositions which has {roll, bench, col}
-        // Build an index: group by colNo then bench
-        const seatIndex = {}; // seatIndex[colNo][bench] => roll
-        if (Array.isArray(alloc.studentPositions)) {
-          for (const sp of alloc.studentPositions) {
-            const colNo = sp.col;
-            const bench = sp.bench;
-            if (!seatIndex[colNo]) seatIndex[colNo] = {};
-            seatIndex[colNo][bench] = sp.roll;
-          }
-        }
-
-        // Build header row: column headings like C1, C2...
-        const headerCells = columns.map((c) =>
+        new TableCell({ children: [new Paragraph(String(a.totalStudents))] }),
+        ...hallNames.map(h =>
           new TableCell({
-            width: { size: Math.floor(9000 / columns.length), type: WidthType.DXA },
-            children: [new Paragraph({ text: `C${c.colNo}`, alignment: AlignmentType.CENTER, })],
-          })
-        );
-
-        // Build data rows (bench 1..maxRows)
-        const dataRows = [];
-        for (let bench = 1; bench <= maxRows; bench++) {
-          const cells = columns.map((c) => {
-            const colNo = c.colNo;
-            const roll = (seatIndex[colNo] && seatIndex[colNo][bench]) || "";
-            return new TableCell({
-              children: [new Paragraph({ text: roll, alignment: AlignmentType.CENTER })],
-              width: { size: Math.floor(9000 / columns.length), type: WidthType.DXA },
-            });
-          });
-          dataRows.push(new TableRow({ children: cells }));
-        }
-
-        table = new Table({
-          rows: [new TableRow({ children: headerCells }), ...dataRows],
-          width: { size: 100, type: WidthType.PERCENTAGE },
-        });
-      } else {
-        // fallback: single-column list of roll numbers in a table
-        const rows = (alloc.studentPositions || []).map((sp) =>
-          new TableRow({
             children: [
-              new TableCell({
-                children: [new Paragraph({ text: sp.roll })],
-                width: { size: 9000, type: WidthType.DXA },
-              }),
+              new Paragraph(a.room === h ? String(a.totalStudents) : "-")
             ],
           })
-        );
+        ),
+        new TableCell({ children: [new Paragraph(String(hallNames.length))] }),
+      ],
+    });
+  });
 
-        if (rows.length === 0 && alloc.leftoverRollNumbers) {
-          // unallocated list
-          rows.push(
-            new TableRow({
-              children: [
-                new TableCell({
-                  children: [new Paragraph({ text: alloc.leftoverRollNumbers.join(", ") })],
-                }),
-              ],
-            })
-          );
-        }
+  // Header row for halls
+  const hallHeaderCells = [
+    new TableCell({ children: [new Paragraph("S.No.")] }),
+    new TableCell({ children: [new Paragraph("Date and Session")] }),
+    new TableCell({ children: [new Paragraph("Total no. of Students")] }),
+    ...hallNames.map(h => new TableCell({ children: [new Paragraph(h)] })),
+    new TableCell({ children: [new Paragraph("Total no. of halls")] }),
+  ];
 
-        table = new Table({
-          rows,
-          width: { size: 100, type: WidthType.PERCENTAGE },
-        });
-      }
-
-      // Create a section for this allocation (a page)
-      doc.addSection({
-        properties: { page: { margin: { top: 720, right: 720, bottom: 720, left: 720 } } },
+  const doc = new DocxDocument({
+    sections: [
+      {
         children: [
-          // Insert header paragraphs
-          ...headerParas,
-          // Insert table
-          table,
-          // Add a small footer spacing
+          new Paragraph({
+            text: "KONGU ENGINEERING COLLEGE",
+            heading: HeadingLevel.HEADING_1,
+            alignment: AlignmentType.CENTER,
+          }),
+          new Paragraph({
+            text: "(Autonomous)",
+            alignment: AlignmentType.CENTER,
+          }),
+          new Paragraph({
+            text: "PERUNDURAI – 638060",
+            alignment: AlignmentType.CENTER,
+          }),
+          new Paragraph({
+            text: "INTERNAL QUALITY ASSURANCE CELL",
+            alignment: AlignmentType.CENTER,
+          }),
+          new Paragraph({
+            text: `Seating Arrangement – CAT ${cat}`,
+            alignment: AlignmentType.CENTER,
+          }),
           new Paragraph({ text: "" }),
-          new Paragraph({ text: "" }),
-        ],
-      });
-    }
+          new Paragraph({ text: "Department of Artificial Intelligence", alignment: AlignmentType.CENTER }),
 
-    // Pack and download the docx
-    try {
-      const blob = await Packer.toBlob(doc);
-      saveAs(blob, `SeatingArrangement_${examDate || new Date().toISOString().slice(0,10)}.docx`);
-    } catch (e) {
-      console.error("Export docx failed:", e);
-      alert("Failed to generate document. Check console for details.");
-    }
-  };
+          new Paragraph({
+            children: [
+              new TextRun({ text: "Academic Year : 2025-2026     " }),
+              new TextRun({ text: `Semester : ${allocations[0].semester}` }),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({ text: `Class : ${year} - AIDS & AIML     ` }),
+              new TextRun({ text: `Date : ${examDate}` }),
+            ],
+          }),
+          new Paragraph({ text: "" }),
+
+          new Paragraph({
+            text: "List of Hall arrangement",
+            alignment: AlignmentType.CENTER,
+          }),
+
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [new TableRow({ children: hallHeaderCells }), ...summaryRows],
+          }),
+        ],
+      },
+
+      // Seating Layouts section
+      {
+        children: allocations.flatMap((alloc) => {
+          const roomCols = allRooms.find((r) => r.roomNo === alloc.room)?.columns || [];
+          const maxRows = roomCols.reduce((m, c) => Math.max(m, c.rows), 0);
+          const seatIndex = {};
+          alloc.studentPositions.forEach((sp) => {
+            if (!seatIndex[sp.col]) seatIndex[sp.col] = {};
+            seatIndex[sp.col][sp.bench] = sp.roll;
+          });
+
+          const headerCells = roomCols.map(
+            (c) =>
+              new TableCell({
+                width: { size: Math.floor(9000 / roomCols.length), type: WidthType.DXA },
+                children: [new Paragraph({ text: `C${c.colNo}`, alignment: AlignmentType.CENTER })],
+              })
+          );
+
+          const dataRows = [];
+          for (let bench = 1; bench <= maxRows; bench++) {
+            const cells = roomCols.map((c) => {
+              const roll = (seatIndex[c.colNo] && seatIndex[c.colNo][bench]) || "";
+              return new TableCell({
+                children: [new Paragraph({ text: roll, alignment: AlignmentType.CENTER })],
+              });
+            });
+            dataRows.push(new TableRow({ children: cells }));
+          }
+
+          return [
+            new Paragraph({ text: `Date & Session: ${alloc.examDate} ${alloc.session}`, bold: true }),
+            new Paragraph({ text: `Hall No: ${alloc.room}`, bold: true }),
+            new Paragraph({ text: `Class: ${alloc.year}`, bold: true }),
+            new Table({
+              rows: [new TableRow({ children: headerCells }), ...dataRows],
+              width: { size: 100, type: WidthType.PERCENTAGE },
+            }),
+            new Paragraph({ text: "" }),
+          ];
+        }),
+      },
+    ],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, `SeatingArrangement_${examDate}.docx`);
+};
 
   return (
     <div className="dashboard-container">
