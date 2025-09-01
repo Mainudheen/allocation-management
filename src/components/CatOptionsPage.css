@@ -83,7 +83,7 @@
   position: relative;
   z-index: 1;
   transition: color 0.3s ease;
-  color: #0056b3; /* Default text color BLUE */
+  color: #ffffff; /* Default text color BLUE */
 }
 
 .cat-option-card:hover span {

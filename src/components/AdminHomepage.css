@@ -64,7 +64,7 @@
 .dashboard-container {
   padding: 40px 20px;
   background: linear-gradient(135deg, #f0f4ff, #dfe9f3);
-  min-height: 100vh;
+  min-height: 50vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
   display: flex;
@@ -72,6 +72,7 @@
   align-items: center;
   animation: slideUpFadeIn 0.8s ease forwards;
   max-width: 1200px;
+  text-align: center;
 }
 
 /* ===== Header Banner ===== */
