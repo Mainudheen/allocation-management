@@ -146,3 +146,14 @@
   border-radius: 50px;
   background-color: #25adcf;
 }
+.button-row {
+  display: flex;
+  gap: 12px;         /* spacing between buttons */
+  margin-top: 16px;
+  flex-wrap: wrap;   /* allows wrapping on small screens */
+}
+
+.button-row .btn {
+  flex: 1;           /* optional: make buttons equal width */
+  max-width: 220px;  /* control size if needed */
+}

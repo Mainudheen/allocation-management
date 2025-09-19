@@ -12,7 +12,7 @@
     "docx": "^9.5.1",
     "express": "^5.1.0",
     "file-saver": "^2.0.5",
-    "framer-motion": "^12.23.9",
+    "framer-motion": "^12.23.15",
     "gsap": "^3.13.0",
     "mongoose": "^8.18.0",
     "mutter": "^1.0.1",

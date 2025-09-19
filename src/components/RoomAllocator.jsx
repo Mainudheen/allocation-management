@@ -596,7 +596,7 @@ const downloadFormatDocx = async () => {
             ))}
           </select>
         </div>
-
+        <div className="btn-row">
         <button className="btn" onClick={allocate}>
           <div id="container-stars"><div id="stars"></div></div>
           <strong>Allocate</strong>
@@ -615,6 +615,7 @@ const downloadFormatDocx = async () => {
           <strong>📄 Download Format</strong>
           <div id="glow"><div className="circle"></div><div className="circle"></div></div>
         </button>
+      </div>
       </div>
 
       {/* Allocation Cards */}
