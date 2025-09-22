@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import navigate
+import { useNavigate } from 'react-router-dom';
 import './AdminAuth.css';
+import Popup from './Popup';   // ✅ Import popup
 
 function AdminAuth() {
   const navigate = useNavigate();
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [popup, setPopup] = useState(null);   // ✅ Popup state
 
   // Admin credentials
   const ADMIN_USERNAME = 'admin';
@@ -17,22 +17,19 @@ function AdminAuth() {
   const handleLogin = (e) => {
     e.preventDefault();
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      setIsLoggedIn(true);
-       navigate('/admin-home');
-      setError('');
+      // ✅ Success popup
+      setPopup({ type: 'success', message: 'Login successful!' });
+
+      // ✅ Navigate after 3 seconds
+      setTimeout(() => {
+        navigate('/admin-home');
+      }, 1000);
+
     } else {
-      setError('Invalid username or password');
+      // ✅ Error popup
+      setPopup({ type: 'error', message: 'Invalid username or password' });
     }
   };
-
-  if (isLoggedIn) {
-    return (
-      <div className="admin-dashboard">
-        <h1>Welcome, Admin!</h1>
-        <p>You are now logged in.</p>
-      </div>
-    );
-  }
 
   return (
     <div className={`admin-auth-container ${isRightPanelActive ? 'right-panel-active' : ''}`} id="container">
@@ -42,7 +39,6 @@ function AdminAuth() {
         <form onSubmit={handleLogin}>
           <h1>Admin Sign In</h1>
           <span>Enter your credentials</span>
-          {error && <p className="error">{error}</p>}
           <input
             type="text"
             placeholder="Username"
@@ -76,6 +72,15 @@ function AdminAuth() {
           </div>
         </div>
       </div>
+
+      {/* ✅ POPUP */}
+      {popup && (
+        <Popup
+          type={popup.type}
+          message={popup.message}
+          onClose={() => setPopup(null)}
+        />
+      )}
     </div>
   );
 }

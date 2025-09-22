@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import './StudentLogin.css';
 import { useNavigate } from 'react-router-dom';
+import Popup from './Popup';
 
 function StudentLogin() {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [popup, setPopup] = useState(null);
   
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const closeDropdown = () => setDropdownOpen(false);
@@ -37,22 +39,24 @@ function StudentLogin() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        alert("Login successful!");
-        navigate('/student-dashboard', {
-          state: {
-            name: formData.name,                   // ✅ PASSING STUDENT NAME
-            rollno: formData.rollno.toUpperCase(),
-            allocations: data.allocations || []    // ✅ IF BACKEND RETURNS IT
-          },
-        });
+       if (res.ok) {
+        setPopup({ type: "success", message: "You have approved claim." });
+        setTimeout(() => {
+          navigate('/student-dashboard', {
+            state: {
+              name: formData.name,
+              rollno: formData.rollno.toUpperCase(),
+              allocations: data.allocations || []
+            },
+          });
+        }, 1000);
       } else {
-        alert(data.message || "Login failed.");
+        setPopup({ type: "error", message: data.message || "Login failed." });
       }
 
     } catch (error) {
       console.error("Error during login:", error);
-      alert("Server error. Please try again later.");
+      setPopup({ type: "warning", message: "Server error. Please try again later." });
     }
   };
 
@@ -140,6 +144,13 @@ function StudentLogin() {
         <button type="submit">Login</button>
       </form>
     </div>
+    {popup && (
+        <Popup
+          type={popup.type}
+          message={popup.message}
+          onClose={() => setPopup(null)}
+        />
+      )}
     </>
   );
 }
