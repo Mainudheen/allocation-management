@@ -52,13 +52,22 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     // Expecting columns: name, rollno, className, year, dob
-    const students = sheetData.map((row) => ({
-      name: String(row.name || "").trim(),
-      rollno: String(row.rollno || "").trim().toUpperCase(),
-      className: String(row.className || "").trim().toUpperCase(),
-      year: String(row.year || "").trim(),
-      password: String(row.dob || "").trim(),
-    }));
+   const students = sheetData
+  .filter(row => row.rollno || row["ROLL NO"] || row["Roll No"])
+  .map(row => {
+    const roll =
+      row.rollno || row["ROLL NO"] || row["Roll No"];
+
+    return {
+      name: String(row.name || row["NAME"] || "").trim(),
+      rollno: String(roll).trim().toUpperCase(),
+      className: String(row.className || row["CLASS"] || "").trim().toUpperCase(),
+      year: String(row.year || row["YEAR"] || "").trim(),
+      password: String(row.dob || row["DOB"] || "").trim(),
+    };
+  });
+
+
 
     await Student.insertMany(students);
     // Remove uploaded file after processing

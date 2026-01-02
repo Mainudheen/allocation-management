@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const XLSX = require("xlsx");
 require("dotenv").config();
+const fs = require("fs");
 
 // Models
 const Room = require("./models/Room");
@@ -196,6 +197,25 @@ app.post("/api/students/add", async (req, res) => {
   }
 });
 
+
+function excelDateToDDMMYYYY(excelDate) {
+  if (!excelDate) return "";
+
+  // If already string like 28-08-2005
+  if (typeof excelDate === "string" && excelDate.includes("-")) {
+    return excelDate;
+  }
+
+  // Excel serial number → JS date
+  const jsDate = new Date((excelDate - 25569) * 86400 * 1000);
+
+  const day = String(jsDate.getDate()).padStart(2, "0");
+  const month = String(jsDate.getMonth() + 1).padStart(2, "0");
+  const year = jsDate.getFullYear();
+
+  return `${day}-${month}-${year}`;
+}
+
 // ✅ Bulk upload students via Excel
 app.post("/api/students/upload", upload.single("file"), async (req, res) => {
   try {
@@ -208,7 +228,7 @@ app.post("/api/students/upload", upload.single("file"), async (req, res) => {
       rollno: row.rollno.toUpperCase(),
       className: row.className.toUpperCase(),
       year: row.year,
-      password: row.dob,
+      password: excelDateToDDMMYYYY(row.dob),
     }));
 
     await Student.insertMany(students);
