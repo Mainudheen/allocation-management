@@ -39,6 +39,140 @@ function isRollInRange(rollno, start, end) {
   return rollno.localeCompare(start) >= 0 && rollno.localeCompare(end) <= 0;
 }
 
+// Validate benches: max 2 students per bench and if 2 students they must be from different years
+async function validateAllocationsYears(allocations) {
+  // gather roll numbers from all allocations
+  const rollSet = new Set();
+  allocations.forEach((allocation) => {
+    if (Array.isArray(allocation.students)) {
+      allocation.students.forEach((s) => {
+        if (s && s.rollno) rollSet.add(s.rollno.toUpperCase());
+      });
+    }
+  });
+
+  const rollnos = Array.from(rollSet);
+  if (rollnos.length === 0) return true;
+
+  // fetch students to determine their years
+  const studentDocs = await Student.find({ rollno: { $in: rollnos } });
+  const rollToYear = {};
+  studentDocs.forEach((sd) => {
+    if (sd.rollno) rollToYear[sd.rollno.toUpperCase()] = sd.year;
+  });
+
+  // validate each allocation's benches
+  for (const allocation of allocations) {
+    const benches = {}; // key -> array of {roll, year}
+
+    const studs = Array.isArray(allocation.students) ? allocation.students : [];
+    for (const s of studs) {
+      const roll = (s.rollno || "").toUpperCase();
+      const key = (s.row != null && s.col != null) ? `${s.row}-${s.col}` : `bench-${s.benchNo || 0}`;
+      if (!benches[key]) benches[key] = [];
+      benches[key].push({ roll, year: rollToYear[roll] || null });
+    }
+
+    for (const [key, arr] of Object.entries(benches)) {
+      // Enforce max 2 students per bench
+      if (arr.length > 2) {
+        const err = new Error(`Bench ${key} has more than 2 students`);
+        err.code = 'BENCH_FULL';
+        throw err;
+      }
+
+      // If two students present, they must be from different years
+      if (arr.length === 2) {
+        const y0 = arr[0].year;
+        const y1 = arr[1].year;
+        if (!y0 || !y1) {
+          const err = new Error(`Student year information missing for bench ${key}`);
+          err.code = 'MISSING_YEAR';
+          throw err;
+        }
+        if (y0 === y1) {
+          const err = new Error(
+            'Already this year student is present in this class and they are writing exam at the same time. No enough space to allocate.'
+          );
+          err.code = 'SAME_YEAR';
+          throw err;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+// Validate rooms/labs: max 2 different years per room/lab for the same examDate/time/session
+async function validateRoomYears(allocations, options = {}) {
+  const { model = Allocation, keyField = 'room' } = options;
+
+  // build combos from incoming allocations
+  const combos = {}; // comboKey -> { keyVal, examDate, time, session, incomingYears:Set }
+
+  allocations.forEach((a) => {
+    const keyVal = (a[keyField] || '').toString();
+    const examDate = a.examDate;
+    const time = a.time;
+    const session = a.session;
+    const comboKey = `${keyVal}||${examDate}||${time}||${session}`;
+    if (!combos[comboKey]) {
+      combos[comboKey] = { keyVal, examDate, time, session, incomingYears: new Set() };
+    }
+    if (a.year) combos[comboKey].incomingYears.add(a.year.toString());
+  });
+
+  for (const comboKey of Object.keys(combos)) {
+    const { keyVal, examDate, time, session, incomingYears } = combos[comboKey];
+
+    // quick checks on incoming
+    if (incomingYears.size > 2) {
+      const err = new Error(
+        `Cannot allocate more than two different years in ${keyField} ${keyVal}`
+      );
+      err.code = 'INCOMING_TOO_MANY_YEARS';
+      throw err;
+    }
+
+    // build query
+    const query = { [keyField]: keyVal, time, session };
+
+    // For Allocation model examDate is a string; for LabAllocation it's a Date
+    if (model && model.modelName === 'LabAllocation') {
+      query.examDate = new Date(examDate);
+    } else {
+      query.examDate = examDate;
+    }
+
+    const existing = await model.find(query);
+    const existingYears = new Set(existing.map((e) => e.year && e.year.toString()));
+
+    // If any incoming year already exists in DB for same room+time+session -> error (same year duplicate)
+    for (const iy of incomingYears) {
+      if (existingYears.has(iy)) {
+        const err = new Error(
+          'Already this year student is present in this room and they are writing exam at the same time. No enough space to allocate.'
+        );
+        err.code = 'SAME_YEAR_ROOM';
+        throw err;
+      }
+    }
+
+    // Combined distinct years
+    const combined = new Set([...existingYears, ...incomingYears]);
+    if (combined.size > 2) {
+      const err = new Error(
+        `Room ${keyVal} already contains students from two different years; cannot add a third year.`
+      );
+      err.code = 'THIRD_YEAR_ROOM';
+      throw err;
+    }
+  }
+
+  return true;
+}
+
 /* -------------------- STUDENT MANAGEMENT -------------------- */
 
 // ✅ Add single student
@@ -287,12 +421,21 @@ app.post("/api/save-allocations", async (req, res) => {
       };
     });
 
-    await Allocation.insertMany(allocationsWithExpiry);
+      // validate room/lab rules then bench rules before saving
+      try {
+        await validateRoomYears(allocationsWithExpiry, { model: Allocation, keyField: 'room' });
+        await validateAllocationsYears(allocationsWithExpiry);
+      } catch (validationErr) {
+        console.error("Allocation validation error:", validationErr);
+        return res.status(400).json({ message: validationErr.message });
+      }
 
-    res.status(200).json({
-      message: "Allocations saved with seating info",
-      allocations: allocationsWithExpiry,
-    });
+      await Allocation.insertMany(allocationsWithExpiry);
+
+      res.status(200).json({
+        message: "Allocations saved with seating info",
+        allocations: allocationsWithExpiry,
+      });
   } catch (err) {
     console.error("Saving allocations error:", err);
     res.status(500).json({ message: "Failed to save allocations", error: err.message });
@@ -375,6 +518,15 @@ app.post("/api/save-lab-allocations", async (req, res) => {
       ...a,
       expiryDate: new Date(new Date(a.examDate).getTime() + 3 * 24 * 60 * 60 * 1000),
     }));
+
+    // validate lab room/year rules then bench rules before saving lab allocations
+    try {
+      await validateRoomYears(allocations, { model: LabAllocation, keyField: 'lab' });
+      await validateAllocationsYears(allocations);
+    } catch (validationErr) {
+      console.error("Lab allocation validation error:", validationErr);
+      return res.status(400).json({ message: validationErr.message });
+    }
 
     await LabAllocation.insertMany(allocations);
     res.status(200).json({ message: "Lab allocations saved" });
