@@ -1,0 +1,113 @@
+.inv-wrapper {
+  width: 100%;
+}
+
+.inv-container {
+  border-radius: 30px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 4px 20px rgba(30, 58, 138, 0.08);
+  overflow: hidden;
+}
+
+.inv-scroll {
+  overflow-x: auto;
+  max-height: 420px;
+}
+
+.inv-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+}
+
+.inv-header {
+  background: rgba(191, 219, 254, 0.7);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #bfdbfe;
+}
+
+.inv-header th {
+  padding: 22px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #1e3a8a;
+}
+
+.row-even {
+  background: white;
+  transition: background 0.3s ease;
+}
+
+.row-odd {
+  background: rgba(191, 219, 254, 0.25);
+  transition: background 0.3s ease;
+}
+
+.row-even:hover,
+.row-odd:hover {
+  background: rgba(191, 219, 254, 0.45);
+}
+
+.inv-table td {
+  padding: 22px;
+  font-size: 15px;
+  color: #1e3a8a;
+  white-space: nowrap;
+}
+
+.no-data {
+  height: 200px;
+  text-align: center;
+  font-size: 18px;
+  font-style: italic;
+  color: #93c5fd;
+  background: rgba(191, 219, 254, 0.15);
+}
+
+.hall {
+  font-weight: 900;
+  color: #2563eb;
+}
+
+.subject {
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.hours {
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.session-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 999px;
+  color: white;
+}
+
+.session-badge.fn {
+  background: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.session-badge.an {
+  background: #0ea5e9;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+}

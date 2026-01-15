@@ -16,6 +16,7 @@ import RoomManager from './components/RoomManager';
 import ClassExamAllocator from './components/ClassExamAllocator';
 import SelectAllocation from './components/SelectAllocation';
 import DownloadFormats from './components/DownloadFormats';
+import AdminDashBoard from './components/invigilators/AdminDashBoard';
 import './styles.css';
 
 function StudentDashboardWrapper() {
@@ -44,6 +45,8 @@ function App() {
         <Route path="/class" element={<ClassExamAllocator />} />
         <Route path="/select" element={<SelectAllocation />} />
         <Route path="/download" element={<DownloadFormats />} />
+        <Route path="/invigilators-dashboard" element={<AdminDashBoard />} />
+
        
       </Routes>
     </Router>

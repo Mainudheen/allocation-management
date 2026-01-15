@@ -1,0 +1,63 @@
+/* Card */
+.inv-card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  transition: 0.3s;
+}
+
+.inv-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+}
+
+.inv-avatar {
+  width: 70px;
+  height: 70px;
+  background: #d0e8ff;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 26px;
+}
+
+/* Grid */
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+  gap: 20px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: rgb(251, 246, 246);
+  padding: 20px;
+  width: 600px;
+   max-height: 80vh;
+  overflow-y: auto; 
+  border-radius: 14px;
+}
+
+/* Login */
+.login-screen {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.error-text {
+  color: red;
+}

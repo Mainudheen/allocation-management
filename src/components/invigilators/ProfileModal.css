@@ -1,0 +1,66 @@
+
+.pm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+ 
+}
+
+
+.pm-container {
+  width: 600px;
+  max-height: 80vh;
+  background: white;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.pm-content {
+  padding: 25px 30px;
+  overflow-y: auto;
+  max-height: 75vh; 
+}
+
+
+.pm-close-btn {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.pm-close-icon {
+  width: 22px;
+  height: 22px;
+  color: #444;
+}
+
+.pm-close-btn:hover .pm-close-icon {
+  color: #1e40af;
+}
+
+
+.history-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.pm-divider {
+  height: 2px;
+  background: #cfe0ff;
+  margin-bottom: 15px;
+}

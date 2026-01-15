@@ -1,0 +1,111 @@
+.history-wrapper {
+  width: 100%;
+}
+
+.history-container {
+  border-radius: 24px;
+  background: white;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 4px 20px rgba(30, 58, 138, 0.05);
+  overflow: hidden;
+}
+
+.history-scroll {
+  overflow-x: auto;
+  max-height: 400px;
+}
+
+.history-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.history-header {
+  background: rgba(191, 219, 254, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.history-header th {
+  padding: 16px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 1px solid #bfdbfe;
+}
+
+.row-even {
+  background: white;
+  transition: background 0.3s;
+}
+
+.row-odd {
+  background: rgba(191, 219, 254, 0.2);
+  transition: background 0.3s;
+}
+
+.row-even:hover,
+.row-odd:hover {
+  background: rgba(191, 219, 254, 0.4);
+}
+
+.history-table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #1e3a8a;
+  white-space: nowrap;
+}
+
+.no-history {
+  height: 160px;
+  text-align: center;
+  color: #60a5fa;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.hall {
+  font-weight: 800;
+  color: #2563eb;
+}
+
+.subject {
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.session {
+  text-align: center;
+}
+
+.session-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: white;
+}
+
+.session-badge.fn {
+  background: #2563eb;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.session-badge.an {
+  background: #38bdf8;
+  box-shadow: 0 2px 6px rgba(56, 189, 248, 0.3);
+}
+
+.hours {
+  text-align: right;
+  font-weight: 900;
+  color: #1e3a8a;
+}

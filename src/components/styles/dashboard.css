@@ -1,0 +1,17 @@
+.dashboard-container {
+  padding: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+.search-box {
+  width: 100%;
+  padding: 10px;
+  margin: 20px 0;
+}

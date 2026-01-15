@@ -1,0 +1,146 @@
+/* Main wrapper */
+.login-wrapper {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    to bottom right,
+    #eff6ff,
+    #e0f2fe,
+    #e0e7ff
+  );
+}
+
+/* Login card container */
+.login-box {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  z-index: 10;
+}
+
+/* Header */
+.login-header {
+  margin-bottom: 32px;
+}
+
+.icon-circle {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: #2563eb;
+  color: white;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 8px 0;
+}
+
+.login-subtitle {
+  font-size: 14px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+/* Card */
+.login-card {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 28px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(30, 58, 138, 0.15);
+}
+
+/* Input */
+.input-label {
+  display: block;
+  text-align: left;
+  color: #1e40af;
+  font-size: 14px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.input-field {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  padding: 10px 14px;
+  background: #eff6ff;
+  outline: none;
+  transition: 0.3s;
+}
+
+.input-field:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+  height: 48px;
+  margin-top: 16px;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login-btn:hover {
+  background: #1e40af;
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Loading icon */
+.spin-icon {
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error message */
+.error-msg {
+  color: #ef4444;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+/* Footer note */
+.login-note {
+  font-size: 13px;
+  color: #60a5fa;
+  margin-top: 24px;
+  font-weight: 500;
+}
